@@ -5,8 +5,9 @@ npm-debug.log*
 
 # Python scripts internos (no van a producción)
 *.py
-productos_costos/
 
 # OS
 .DS_Store
 Thumbs.db
+
+.vercel

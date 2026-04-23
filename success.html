@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a4a1a">
+<title>Pedido confirmado — La Madrina</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green-dark: #1a4a1a;
+    --green-mid: #2d6a2d;
+    --green-light: #4a8c3f;
+    --gold: #c8862a;
+    --gold-light: #e8a84a;
+    --cream: #f8f4ec;
+    --cream-dark: #ede7d5;
+    --text-dark: #1a1a14;
+    --text-mid: #3a3a2a;
+    --text-light: #6a6a5a;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Lora', Georgia, serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  nav {
+    background: var(--green-dark);
+    padding: 1rem 2rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    border-bottom: 2px solid var(--gold);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--cream); font-size: 1.3rem; font-weight: 600;
+    letter-spacing: 0.14em; text-decoration: none;
+  }
+  .nav-logo span { color: var(--gold-light); }
+
+  main {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    padding: 3rem 1.5rem;
+  }
+  .confirm-card {
+    background: white; max-width: 620px; width: 100%;
+    border: 1px solid var(--cream-dark);
+    border-top: 4px solid var(--green-light);
+    box-shadow: 0 8px 32px rgba(26,74,26,0.1);
+  }
+  .confirm-head {
+    background: var(--green-dark); padding: 2rem 2.5rem;
+    text-align: center; border-bottom: 2px solid var(--gold);
+  }
+  .confirm-check {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(200,134,42,0.15); border: 2px solid var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.2rem;
+  }
+  .confirm-check svg { width: 32px; height: 32px; stroke: var(--gold-light); fill: none; stroke-width: 2.5; }
+  .confirm-titulo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: var(--cream); font-weight: 600; letter-spacing: 0.03em;
+    margin-bottom: 0.4rem;
+  }
+  .confirm-sub {
+    font-size: 0.88rem; color: rgba(248,244,236,0.65);
+    letter-spacing: 0.06em; font-style: italic;
+  }
+
+  .confirm-body { padding: 2rem 2.5rem; }
+
+  .confirm-mensaje {
+    font-size: 0.95rem; color: var(--text-mid); line-height: 1.8;
+    margin-bottom: 1.8rem; font-style: italic;
+  }
+
+  .pago-datos {
+    background: var(--cream); border: 1px solid var(--cream-dark);
+    padding: 1.2rem 1.4rem; margin-bottom: 1.8rem;
+  }
+  .pago-datos-tit {
+    font-family: 'Lora', serif; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--gold); margin-bottom: 0.9rem; display: block;
+  }
+  .pago-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 0.88rem; padding: 5px 0;
+    border-bottom: 1px dashed var(--cream-dark);
+    gap: 1rem;
+  }
+  .pago-row:last-child { border-bottom: none; }
+  .pago-lbl { color: var(--text-light); }
+  .pago-val { color: var(--text-dark); font-weight: 600; text-align: right; word-break: break-word; }
+  .pago-val.approved {
+    color: var(--green-mid);
+    display: flex; align-items: center; gap: 0.4rem; justify-content: flex-end;
+  }
+
+  /* Datos de transferencia */
+  .transfer-block {
+    background: rgba(200,134,42,0.08);
+    border: 1px solid rgba(200,134,42,0.3);
+    border-left: 3px solid var(--gold);
+    padding: 1.1rem 1.3rem; margin-bottom: 1.8rem;
+    display: none;
+  }
+  .transfer-block.show { display: block; }
+  .transfer-tit {
+    font-family: 'Lora', serif; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--gold); margin-bottom: 0.9rem; display: block;
+  }
+  .transfer-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.88rem; padding: 7px 0;
+    border-bottom: 1px dashed rgba(200,134,42,0.25);
+    gap: 0.8rem;
+  }
+  .transfer-row:last-of-type { border-bottom: none; }
+  .transfer-lbl { color: var(--text-light); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em; }
+  .transfer-val { color: var(--green-dark); font-weight: 700; font-family: monospace; font-size: 0.95rem; letter-spacing: 0.03em; word-break: break-all; }
+  .copy-btn {
+    background: transparent; border: 1px solid var(--cream-dark); color: var(--text-light);
+    font-size: 0.7rem; padding: 3px 8px; cursor: pointer; font-family: 'Lora', serif;
+    letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px;
+    transition: all 0.2s; margin-left: 0.5rem; flex-shrink: 0;
+  }
+  .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .copy-btn.copied { background: var(--green-mid); border-color: var(--green-mid); color: white; }
+
+  .pasos-tit {
+    font-family: 'Lora', serif; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--gold); margin-bottom: 1rem; display: block;
+  }
+  .pasos-lista { list-style: none; padding: 0; margin-bottom: 2rem; }
+  .pasos-lista li {
+    display: flex; align-items: flex-start; gap: 0.8rem;
+    font-size: 0.88rem; color: var(--text-mid); padding: 0.5rem 0;
+    border-bottom: 1px solid var(--cream-dark); line-height: 1.55;
+  }
+  .pasos-lista li:last-child { border-bottom: none; }
+  .paso-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--green-dark); color: var(--cream);
+    font-family: 'Lora', serif; font-size: 0.72rem; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  .confirm-btns { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--gold); color: var(--green-dark);
+    font-family: 'Lora', serif; font-weight: 700; font-size: 0.82rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 13px 28px; border: none; cursor: pointer;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: background 0.2s, transform 0.15s; flex: 1; justify-content: center;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: var(--text-mid);
+    font-family: 'Lora', serif; font-size: 0.82rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 12px 20px; border: 1px solid var(--cream-dark);
+    cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: border-color 0.2s; flex: 1; justify-content: center;
+  }
+  .btn-outline:hover { border-color: var(--green-mid); color: var(--green-dark); }
+
+  /* Loading */
+  .loading-state {
+    display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
+    padding: 1rem 0; color: var(--text-light); font-style: italic;
+  }
+  .spinner {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 3px solid var(--cream-dark); border-top-color: var(--green-mid);
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer {
+    background: #0d1f0d; color: rgba(248,244,236,0.4);
+    text-align: center; padding: 1.5rem 2rem;
+    font-family: 'Lora', serif; font-size: 0.8rem;
+    border-top: 2px solid var(--gold);
+  }
+  footer span { color: var(--gold-light); }
+
+  .estado-pending .confirm-check { border-color: rgba(200,134,42,0.5); }
+  .estado-pending .confirm-titulo { color: var(--gold-light); }
+  .estado-error .confirm-head { background: #2a0e0e; }
+  .estado-error .confirm-check { border-color: rgba(200,50,50,0.4); }
+  .estado-error .confirm-check svg { stroke: #e07070; }
+  .estado-error .confirm-titulo { color: #f0a0a0; }
+
+  @media (max-width: 480px) {
+    .confirm-head, .confirm-body { padding: 1.5rem 1.2rem; }
+    .confirm-btns { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo"><em>La</em> <span>Madrina</span></a>
+</nav>
+
+<main>
+  <div class="confirm-card" id="confirmCard">
+    <div class="confirm-head">
+      <div class="confirm-check">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="confirm-titulo" id="confirmTitulo">Verificando pago…</div>
+      <div class="confirm-sub" id="confirmSub">Un momento por favor</div>
+    </div>
+    <div class="confirm-body">
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>Confirmando el estado con Mercado Pago…</p>
+      </div>
+
+      <p class="confirm-mensaje" id="confirmMensaje" style="display:none"></p>
+
+      <div class="pago-datos" id="pagoDatos" style="display:none">
+        <span class="pago-datos-tit">Detalle del pago</span>
+        <div class="pago-row" id="pagoIdRow">
+          <span class="pago-lbl">Número de pago</span>
+          <span class="pago-val" id="pagoId">—</span>
+        </div>
+        <div class="pago-row">
+          <span class="pago-lbl">Estado</span>
+          <span class="pago-val approved" id="pagoEstado">—</span>
+        </div>
+        <div class="pago-row" id="pagoMetodoRow" style="display:none">
+          <span class="pago-lbl">Método</span>
+          <span class="pago-val" id="pagoMetodo">—</span>
+        </div>
+        <div class="pago-row" id="pagoMontoRow" style="display:none">
+          <span class="pago-lbl">Monto</span>
+          <span class="pago-val" id="pagoMonto">—</span>
+        </div>
+        <div class="pago-row" id="pagoExternalRow" style="display:none">
+          <span class="pago-lbl">Comprador</span>
+          <span class="pago-val" id="pagoExternal">—</span>
+        </div>
+      </div>
+
+      <!-- Datos de transferencia (solo si method=transferencia) -->
+      <div class="transfer-block" id="transferBlock">
+        <span class="transfer-tit">Datos para transferir</span>
+        <div class="transfer-row" id="rowBank"><span class="transfer-lbl">Banco</span><span class="transfer-val" id="bankName">—</span></div>
+        <div class="transfer-row" id="rowHolder"><span class="transfer-lbl">Titular</span><span class="transfer-val" id="bankHolder">—</span></div>
+        <div class="transfer-row" id="rowCuit" style="display:none"><span class="transfer-lbl">CUIT</span><span class="transfer-val" id="bankCuit">—</span></div>
+        <div class="transfer-row">
+          <span class="transfer-lbl">CBU</span>
+          <span style="display:flex;align-items:center;gap:0.3rem;flex:1;justify-content:flex-end">
+            <span class="transfer-val" id="bankCbu">—</span>
+            <button class="copy-btn" onclick="copyTxt('bankCbu', this)">Copiar</button>
+          </span>
+        </div>
+        <div class="transfer-row">
+          <span class="transfer-lbl">Alias</span>
+          <span style="display:flex;align-items:center;gap:0.3rem;flex:1;justify-content:flex-end">
+            <span class="transfer-val" id="bankAlias">—</span>
+            <button class="copy-btn" onclick="copyTxt('bankAlias', this)">Copiar</button>
+          </span>
+        </div>
+        <p style="font-family:'Lora',serif;font-size:0.82rem;color:var(--text-mid);font-style:italic;margin-top:0.8rem;line-height:1.6">
+          Enviá el comprobante por WhatsApp apenas hagas la transferencia. Coordinamos la entrega al recibirlo.
+        </p>
+      </div>
+
+      <span class="pasos-tit">¿Qué sigue?</span>
+      <ul class="pasos-lista" id="pasosList"></ul>
+
+      <div class="confirm-btns">
+        <a href="/" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Volver a la tienda
+        </a>
+        <a href="https://wa.me/5493564679338?text=Hola!%20Hice%20un%20pedido%20y%20quiero%20coordinar%20la%20entrega." target="_blank" class="btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+          Coordinar entrega
+        </a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span>La Madrina</span> · Forrajería de La Soñada · San Francisco, Córdoba
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   Éxito / Confirmación — verificación real con backend
+═══════════════════════════════════════════════════ */
+
+function copyTxt(elId, btn) {
+  var txt = document.getElementById(elId).textContent.trim();
+  if (!txt || txt === '—') return;
+  navigator.clipboard.writeText(txt).then(function() {
+    var orig = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = orig; btn.classList.remove('copied'); }, 1600);
+  });
+}
+
+function renderEstado(estado) {
+  var card = document.getElementById('confirmCard');
+  var check = document.querySelector('.confirm-check svg');
+  var titulo = document.getElementById('confirmTitulo');
+  var sub = document.getElementById('confirmSub');
+  var mensaje = document.getElementById('confirmMensaje');
+  var loading = document.getElementById('loadingState');
+  var pagoDatos = document.getElementById('pagoDatos');
+  var pasosList = document.getElementById('pasosList');
+  var estadoEl = document.getElementById('pagoEstado');
+
+  loading.style.display = 'none';
+  mensaje.style.display = 'block';
+  pagoDatos.style.display = 'block';
+
+  card.classList.remove('estado-pending', 'estado-error');
+
+  if (estado.type === 'approved') {
+    check.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+    titulo.textContent = '¡Pedido confirmado!';
+    sub.textContent = 'Tu pago fue procesado exitosamente';
+    mensaje.textContent = estado.mensaje || 'Gracias por tu compra. En breve te enviamos un email con el detalle del pedido y nos contactamos por WhatsApp para coordinar la entrega o retiro.';
+    estadoEl.className = 'pago-val approved';
+    estadoEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Aprobado';
+    pasosList.innerHTML =
+      '<li><span class="paso-num">1</span>Te llega un email con el resumen de tu pedido.</li>' +
+      '<li><span class="paso-num">2</span>Te contactamos por WhatsApp para coordinar entrega o retiro.</li>' +
+      '<li><span class="paso-num">3</span>¡Listo! Recibís tu pedido cuando mejor te quede.</li>';
+
+  } else if (estado.type === 'pending') {
+    card.classList.add('estado-pending');
+    check.innerHTML = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
+    titulo.textContent = 'Pago en proceso';
+    sub.textContent = 'Tu pago está siendo verificado';
+    mensaje.textContent = estado.mensaje || 'Tu pago está siendo procesado. Te notificaremos por email y WhatsApp cuando esté confirmado. Puede demorar unos minutos.';
+    estadoEl.className = 'pago-val';
+    estadoEl.style.color = '#b87333';
+    estadoEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> En proceso';
+    pasosList.innerHTML =
+      '<li><span class="paso-num">1</span>Aguardá la confirmación por email (hasta 24 hs).</li>' +
+      '<li><span class="paso-num">2</span>Al confirmarse, te contactamos para coordinar la entrega.</li>';
+
+  } else if (estado.type === 'manual-transferencia') {
+    check.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+    titulo.textContent = '¡Pedido registrado!';
+    sub.textContent = 'Aguardamos tu transferencia';
+    mensaje.textContent = 'Recibimos tu pedido. Te dejamos los datos bancarios para completar el pago. Cuando tengamos el comprobante coordinamos la entrega.';
+    estadoEl.className = 'pago-val';
+    estadoEl.style.color = '#c8862a';
+    estadoEl.innerHTML = 'Pendiente transferencia';
+    document.getElementById('transferBlock').classList.add('show');
+    document.getElementById('pagoIdRow').style.display = 'none';
+    pasosList.innerHTML =
+      '<li><span class="paso-num">1</span>Transferí el importe total a los datos bancarios de abajo.</li>' +
+      '<li><span class="paso-num">2</span>Enviá el comprobante por WhatsApp al 3564-679338.</li>' +
+      '<li><span class="paso-num">3</span>Coordinamos la entrega o retiro apenas lo recibimos.</li>';
+
+  } else if (estado.type === 'manual-efectivo') {
+    check.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+    titulo.textContent = '¡Pedido registrado!';
+    sub.textContent = 'Coordinamos por WhatsApp';
+    mensaje.textContent = 'Recibimos tu pedido. Te contactamos por WhatsApp para confirmar disponibilidad y coordinar la entrega o retiro. Pagás en efectivo al recibirlo.';
+    estadoEl.className = 'pago-val';
+    estadoEl.style.color = '#c8862a';
+    estadoEl.innerHTML = 'Efectivo — pendiente';
+    document.getElementById('pagoIdRow').style.display = 'none';
+    pasosList.innerHTML =
+      '<li><span class="paso-num">1</span>Te escribimos por WhatsApp para confirmar disponibilidad.</li>' +
+      '<li><span class="paso-num">2</span>Coordinamos la entrega o retiro.</li>' +
+      '<li><span class="paso-num">3</span>Pagás en efectivo al recibir o retirar el pedido.</li>';
+
+  } else { // rejected / error
+    card.classList.add('estado-error');
+    check.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+    titulo.textContent = estado.titulo || 'Pago no procesado';
+    sub.textContent = estado.sub || 'Hubo un problema con tu pago';
+    mensaje.textContent = estado.mensaje || 'No pudimos procesar tu pago. Intentá nuevamente o escribinos por WhatsApp para coordinar otra forma de pago.';
+    estadoEl.className = 'pago-val';
+    estadoEl.style.color = '#c0504d';
+    estadoEl.innerHTML = 'Rechazado';
+    pasosList.innerHTML =
+      '<li><span class="paso-num">1</span>Volvé a la tienda e intentá nuevamente con otra tarjeta.</li>' +
+      '<li><span class="paso-num">2</span>O escribinos por WhatsApp para coordinar transferencia o efectivo.</li>';
+  }
+}
+
+(async function init() {
+  var params = new URLSearchParams(window.location.search);
+  var status      = params.get('collection_status') || params.get('status');
+  var paymentId   = params.get('payment_id') || params.get('collection_id');
+  var metodoParam = params.get('metodo');
+
+  /* Pedido manual (transferencia / efectivo) */
+  if (status === 'manual') {
+    document.getElementById('pagoDatos').style.display = 'none';
+
+    if (metodoParam === 'transferencia') {
+      // Cargar datos bancarios del backend
+      try {
+        var cfg = await fetch('/api/config-publico').then(r => r.json());
+        if (cfg && cfg.bank) {
+          document.getElementById('bankName').textContent = cfg.bank.bank || '—';
+          document.getElementById('bankHolder').textContent = cfg.bank.holder || '—';
+          document.getElementById('bankCbu').textContent = cfg.bank.cbu || '—';
+          document.getElementById('bankAlias').textContent = cfg.bank.alias || '—';
+          if (cfg.bank.cuit) {
+            document.getElementById('bankCuit').textContent = cfg.bank.cuit;
+            document.getElementById('rowCuit').style.display = 'flex';
+          }
+        }
+      } catch(e) {
+        console.warn('No se pudo cargar config pública:', e);
+      }
+      renderEstado({ type: 'manual-transferencia' });
+    } else {
+      renderEstado({ type: 'manual-efectivo' });
+    }
+    return;
+  }
+
+  /* Pago con Mercado Pago */
+  document.getElementById('pagoId').textContent = paymentId ? '#' + paymentId : '—';
+
+  if (!paymentId) {
+    // Sin ID: mostrar estado según URL solamente (fallback)
+    var fallbackType = (status === 'approved') ? 'approved'
+                     : (status === 'pending' || status === 'in_process') ? 'pending'
+                     : 'error';
+    renderEstado({ type: fallbackType });
+    return;
+  }
+
+  // Verificación real contra el backend
+  try {
+    var data = await fetch('/api/payment-status/' + encodeURIComponent(paymentId)).then(r => r.json());
+
+    if (data && data.status) {
+      document.getElementById('pagoId').textContent = '#' + data.id;
+      if (data.amount) {
+        document.getElementById('pagoMonto').textContent = '$' + Number(data.amount).toLocaleString('es-AR');
+        document.getElementById('pagoMontoRow').style.display = 'flex';
+      }
+      if (data.payment_type) {
+        document.getElementById('pagoMetodo').textContent = formatearMetodo(data.payment_type);
+        document.getElementById('pagoMetodoRow').style.display = 'flex';
+      }
+      if (data.buyer_name) {
+        document.getElementById('pagoExternal').textContent = data.buyer_name;
+        document.getElementById('pagoExternalRow').style.display = 'flex';
+      }
+
+      var type = (data.status === 'approved') ? 'approved'
+               : (data.status === 'pending' || data.status === 'in_process' || data.status === 'authorized') ? 'pending'
+               : 'error';
+
+      var mensajePersonal = null;
+      if (type === 'approved' && data.buyer_name) {
+        mensajePersonal = 'Gracias, ' + data.buyer_name.split(' ')[0] + '. Tu pago fue aprobado. Recibirás un email con el detalle y te contactamos por WhatsApp para coordinar.';
+      }
+      renderEstado({ type: type, mensaje: mensajePersonal });
+      return;
+    }
+  } catch(e) {
+    console.warn('Fallback a URL params:', e);
+  }
+
+  // Si la verificación backend falla, confiar en URL params
+  var tipoFallback = (status === 'approved') ? 'approved'
+                   : (status === 'pending' || status === 'in_process') ? 'pending'
+                   : 'error';
+  renderEstado({ type: tipoFallback });
+})();
+
+function formatearMetodo(tipo) {
+  var map = {
+    credit_card: 'Tarjeta de crédito',
+    debit_card: 'Tarjeta de débito',
+    ticket: 'Efectivo (Pago Fácil / Rapipago)',
+    bank_transfer: 'Transferencia',
+    account_money: 'Dinero en cuenta MP',
+    atm: 'Cajero automático',
+  };
+  return map[tipo] || tipo;
+}
+</script>
+
+</body>
+</html>

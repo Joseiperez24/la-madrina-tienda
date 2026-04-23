@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(landing-forge)",
+      "Skill(landing-forge:*)",
+      "Bash(perl -ne 'if \\(/const pkgImgs = \\\\{/\\) { $in=1; next } if \\($in && /^\\\\};/\\) { $in=0 } if \\($in && /^\\\\s+\\(\\\\w+\\):/\\) { print \"$1\\\\n\" }' /c/Users/perez/Desktop/forrajeria/la_madrina_v25.html)",
+      "Bash(python -c \"import fitz; print\\('PyMuPDF OK'\\)\")",
+      "Bash(pip install *)",
+      "Bash(python -c ' *)",
+      "Bash(del \"C:\\\\Users\\\\perez\\\\Desktop\\\\forrajeria\\\\transform.py\")",
+      "Bash(start \"\" \"C:\\\\Users\\\\perez\\\\Desktop\\\\forrajeria\\\\la_madrina_v25.html\")",
+      "Bash(python3 -c ' *)",
+      "Bash(dir \"C:\\\\Users\\\\perez\\\\Desktop\\\\forrajeria\\\\imgs\\\\logos\\\\\" /b && echo \"---\" && dir \"C:\\\\Users\\\\perez\\\\Desktop\\\\forrajeria\\\\\" /b)",
+      "Bash(python3 transform2.py)",
+      "Bash(start \"\" \"C:/Users/perez/Desktop/forrajeria/la_madrina_v25.html\")",
+      "Bash(python3 transform3.py)",
+      "Bash(python3 fix_emojis2.py)",
+      "Bash(start \"\" \"la_madrina_v25.html\")",
+      "Bash(python3 fix_strips.py)",
+      "Bash(powershell -Command \"Get-Content 'C:\\\\Users\\\\perez\\\\Desktop\\\\forrajeria\\\\la_madrina_v25.html' | Select-Object -Skip 1659 -First 100\")",
+      "Bash(awk 'NR>=1675 && NR<=1730' la_madrina.html)",
+      "Bash(awk 'NR>=1665 && NR<=1680' la_madrina.html)",
+      "Bash(awk 'NR>=2567 && NR<=2640' la_madrina.html)",
+      "Bash(awk 'NR>=1734 && NR<=1750' la_madrina.html)",
+      "Bash(awk 'NR>=2539 && NR<=2570' la_madrina.html)",
+      "Bash(awk 'NR>=2134 && NR<=2160' la_madrina.html)",
+      "Bash(awk 'NR>=1808 && NR<=1878' la_madrina.html)",
+      "Bash(sed -i '1815s|imgSrc: '\"'\"'imgs/pinterest/avena.jfif'\"'\"'|imgSrc: '\"'\"'imgs/decoracion-fondos/gallina.jpeg'\"'\"'|' la_madrina.html)",
+      "Bash(sed -i '1827s|imgSrc: '\"'\"'imgs/pinterest/animales.jfif'\"'\"'|imgSrc: '\"'\"'imgs/avenamaizfardo/pexels-pixabay-87824.jpg.jpeg'\"'\"'|' la_madrina.html)",
+      "Bash(sed -i '1840s|imgSrc: '\"'\"'imgs/pinterest/mascaballos.jfif'\"'\"'|imgSrc: '\"'\"'imgs/decoracion-fondos/arreocaballo.jpeg'\"'\"'|' la_madrina.html)",
+      "Bash(sed -i '1850s|imgSrc: '\"'\"'imgs/pinterest/cabalgata.jfif'\"'\"'|imgSrc: '\"'\"'imgs/decoracion-fondos/vacashorizonte.jpeg'\"'\"'|' la_madrina.html)",
+      "Bash(powershell -Command ' *)",
+      "Bash(awk 'NR>=1878 && NR<=1920' la_madrina.html)",
+      "mcp__Claude_Preview__preview_start",
+      "WebFetch(domain:forrajeriahernandarias.com.ar)",
+      "WebFetch(domain:forrajeriadelpilar.com.ar)",
+      "WebFetch(domain:www.animaladapets.com.ar)"
+    ]
+  }
+}

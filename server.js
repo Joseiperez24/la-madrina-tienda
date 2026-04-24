@@ -10,6 +10,7 @@ const express    = require('express');
 const axios      = require('axios');
 const nodemailer = require('nodemailer');
 const path       = require('path');
+const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 app.use(express.json({ limit: '1mb' }));
@@ -30,7 +31,15 @@ const {
   BANK_HOLDER,       // Titular de la cuenta
   BANK_BANK,         // Banco
   BANK_CUIT,         // CUIT del titular (opcional)
+  SUPABASE_URL,      // URL del proyecto Supabase
+  SUPABASE_SERVICE_KEY, // Service role key (nunca la anon key)
+  SYNC_SECRET,       // Clave secreta para el endpoint de Google Sheets
 } = process.env;
+
+// ── Supabase ──────────────────────────────────────────────
+const supabase = (SUPABASE_URL && SUPABASE_SERVICE_KEY)
+  ? createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+  : null;
 
 // ── Nodemailer ───────────────────────────────────────────
 let transporter = null;
@@ -46,6 +55,54 @@ if (SMTP_USER && SMTP_PASS) {
 // ── Home → la_madrina.html ───────────────────────────────
 app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, 'la_madrina.html'));
+});
+
+// ── GET /api/stock ───────────────────────────────────────
+// Stock de todos los productos. Falla silenciosamente → frontend muestra todo.
+app.get('/api/stock', async (_req, res) => {
+  if (!supabase) return res.json([]);
+  try {
+    const { data, error } = await supabase
+      .from('stock')
+      .select('id, stock, disponible');
+    if (error) throw error;
+    res.json(data || []);
+  } catch (err) {
+    console.error('Error /api/stock:', err.message);
+    res.json([]);
+  }
+});
+
+// ── POST /api/sync-stock ─────────────────────────────────
+// Recibe filas del Google Sheet y las upsertea en Supabase.
+// Protegido con Authorization: Bearer {SYNC_SECRET}
+app.post('/api/sync-stock', async (req, res) => {
+  if (!SYNC_SECRET || req.headers.authorization !== 'Bearer ' + SYNC_SECRET) {
+    return res.status(401).json({ error: 'No autorizado' });
+  }
+  if (!supabase) return res.status(503).json({ error: 'Supabase no configurado en .env' });
+  try {
+    const { rows } = req.body;
+    if (!Array.isArray(rows) || !rows.length) {
+      return res.status(400).json({ error: 'Se requiere rows[]' });
+    }
+    const records = rows.map(r => ({
+      id:         String(r.id).trim(),
+      nombre:     String(r.nombre || '').trim(),
+      stock:      Number(r.stock) >= -1 ? Number(r.stock) : -1,
+      disponible: r.disponible === true || String(r.disponible).toLowerCase() === 'true',
+      updated_at: new Date().toISOString(),
+    }));
+    const { error } = await supabase
+      .from('stock')
+      .upsert(records, { onConflict: 'id' });
+    if (error) throw error;
+    console.log(`✓ Stock sincronizado: ${records.length} productos`);
+    res.json({ ok: true, updated: records.length });
+  } catch (err) {
+    console.error('Error /api/sync-stock:', err.message);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ── GET /api/config-publico ──────────────────────────────
@@ -466,6 +523,8 @@ if (require.main === module) {
     if (!MP_ACCESS_TOKEN) console.warn('  ⚠  MP_ACCESS_TOKEN no configurado — los pagos online no funcionarán');
     if (!transporter)     console.warn('  ⚠  SMTP no configurado — los emails no se enviarán');
     if (!BANK_CBU)        console.warn('  ⚠  BANK_CBU no configurado — no se podrán enviar datos de transferencia');
+    if (!supabase)        console.warn('  ⚠  SUPABASE_URL / SUPABASE_SERVICE_KEY no configurados — el stock no se mostrará');
+    if (!SYNC_SECRET)     console.warn('  ⚠  SYNC_SECRET no configurado — el endpoint /api/sync-stock rechazará todo');
     console.log('');
   });
 }

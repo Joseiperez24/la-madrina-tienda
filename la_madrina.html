@@ -1798,6 +1798,9 @@
   .prod-badge { display: inline-block; font-size: 0.7rem; font-family: 'Lora', serif; padding: 3px 10px; margin-bottom: 0.9rem; letter-spacing: 0.06em; border-radius: 3px; border: 1px solid; }
   .prod-badge-disponible { background: rgba(45,106,45,0.08); color: var(--green-mid); border-color: rgba(45,106,45,0.25); }
   .prod-badge-prox { background: rgba(139,26,26,0.07); color: var(--red-badge); border-color: rgba(139,26,26,0.2); }
+  .prod-badge-sinstock { background: rgba(139,26,26,0.1); color: #8b1a1a; border-color: rgba(139,26,26,0.35); }
+  .prod-badge-pocas { background: rgba(180,80,0,0.1); color: #7a3800; border-color: rgba(180,80,0,0.3); }
+  .btn-sinstock { opacity: 0.45 !important; cursor: not-allowed !important; pointer-events: none !important; background: #c0b9a8 !important; border-color: #c0b9a8 !important; color: #4a4a3a !important; }
 
   /* Wrapper imagen con overlay hover (mascotas y cualquier prod-card) */
   .prod-card-img-wrap { position: relative; flex-shrink: 0; }
@@ -2225,6 +2228,34 @@ function goToProduct(section) {
   }, 600);
 }
 
+// ── Stock desde Supabase (vía backend) ──────────────────
+window._stock = {};
+(function () {
+  fetch('/api/stock')
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (data) {
+      data.forEach(function (item) { window._stock[item.id] = item; });
+    })
+    .catch(function () {});
+})();
+
+function _sinStock(pid) {
+  var s = window._stock[pid];
+  if (!s) return false;
+  return s.disponible === false || s.stock === 0;
+}
+function _pocasUnidades(pid) {
+  var s = window._stock[pid];
+  if (!s || s.disponible === false || s.stock <= 0) return 0;
+  return (s.stock > 0 && s.stock <= 5) ? s.stock : 0;
+}
+function _stockBadgeHtml(pid) {
+  if (_sinStock(pid)) return '<span class="prod-badge prod-badge-sinstock">Sin stock</span>';
+  var pu = _pocasUnidades(pid);
+  if (pu) return '<span class="prod-badge prod-badge-pocas">Últimas ' + pu + ' unidades</span>';
+  return '';
+}
+
 const catalogo = {
   mascotas: {
     label: 'Mascotas', title: 'Balanceados para mascotas',
@@ -2438,7 +2469,8 @@ function mostrarCat(cat, el) {
       '</div><div id="marca-panel"></div></div>';
     renderMarca(cat, firstMarca);
   } else {
-    grid.innerHTML = '<div class="prod-cards-grid">' + data.productos.map(function(p) {
+    grid.innerHTML = '<div class="prod-cards-grid">' + data.productos.map(function(p, i) {
+      var pid = cat + '_' + i;
       var selectorHtml = '';
       if (p.selector) {
         var id = p.selector;
@@ -2453,22 +2485,31 @@ function mostrarCat(cat, el) {
           '<input type="number" class="sel-input" id="sel-' + id + '-kg" min="1" max="24" value="5"></div>' +
           '</div></div>';
       }
+      // Si Supabase tiene el producto como disponible, ignorar el flag prox del código
+      var _stockData = window._stock[pid];
+      var _supabaseDisponible = _stockData && _stockData.disponible === true && _stockData.stock !== 0;
+      var efectivamenteProx = p.prox && !_supabaseDisponible;
+      var sinStock = _sinStock(pid);
+
       var btnHtml = '';
-      if (p.prox) {
+      if (sinStock) {
+        btnHtml = _stockBadgeHtml(pid) +
+          '<button class="btn-agregar btn-sinstock" disabled>Sin stock disponible</button>';
+      } else if (efectivamenteProx) {
         btnHtml = '<div style="font-family:Lora,serif;font-size:0.82rem;color:var(--text-light);padding-top:0.3rem;">Disponible próximamente</div>';
       } else if (p.precio) {
-        var pid = 'forr_' + p.nombre.replace(/\W+/g,'_');
-        btnHtml = '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.25rem;font-weight:600;color:var(--green-dark);margin-bottom:0.7rem;">$' + p.precio.toLocaleString('es-AR') + '<small style="font-size:0.72rem;color:var(--text-light);font-family:Lora,serif;margin-left:4px;">' + (p.unit||'') + '</small></div>' +
+        btnHtml = _stockBadgeHtml(pid) +
+          '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.25rem;font-weight:600;color:var(--green-dark);margin-bottom:0.7rem;">$' + p.precio.toLocaleString('es-AR') + '<small style="font-size:0.72rem;color:var(--text-light);font-family:Lora,serif;margin-left:4px;">' + (p.unit||'') + '</small></div>' +
           '<button class="btn-agregar" onclick="addToCart(' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(p.unit||'') + ',' + p.precio + ',1)">' +
           '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Agregar al carrito</button>';
       } else {
-        var pid2 = 'forr_' + p.nombre.replace(/\W+/g,'_');
-        btnHtml = '<div class="pkg-card-precio-ph">Precio a confirmar</div>' +
-          '<button class="btn-agregar" onclick="addToCart(' + JSON.stringify(pid2) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(p.unit||'') + ',0,1)">' +
+        btnHtml = _stockBadgeHtml(pid) +
+          '<div class="pkg-card-precio-ph">Precio a confirmar</div>' +
+          '<button class="btn-agregar" onclick="addToCart(' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(p.unit||'') + ',0,1)">' +
           '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Agregar al carrito</button>';
       }
-      var pid = 'forr_' + p.nombre.replace(/\W+/g,'_');
-      var badgeClass = p.prox ? 'prod-badge-prox' : 'prod-badge-disponible';
+      var badgeClass = sinStock ? 'prod-badge-sinstock' : (efectivamenteProx ? 'prod-badge-prox' : 'prod-badge-disponible');
+      var badgeText  = sinStock ? 'Sin stock' : (efectivamenteProx ? 'Próximamente' : 'Disponible');
       var imgHtml = p.imgSrc
         ? '<img class="prod-card-img" src="' + p.imgSrc + '" alt="' + p.nombre + '" loading="lazy" onerror="this.style.display=\'none\'">' +
           '<div class="prod-card-img-ph" style="display:none"><svg viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg><span>Imagen próximamente</span></div>'
@@ -2479,7 +2520,7 @@ function mostrarCat(cat, el) {
         (!p.prox ? '<button class="fav-prod-btn" data-fav-id="' + pid + '" onclick="toggleFav(this,' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(data.label) + ',' + (p.precio||0) + ')"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>' : '') +
         '<div class="prod-nombre">' + p.nombre + '</div>' +
         '<div class="prod-desc">' + p.desc + '</div>' +
-        '<span class="prod-badge ' + badgeClass + '">' + p.badge + '</span>' +
+        '<span class="prod-badge ' + badgeClass + '">' + badgeText + '</span>' +
         selectorHtml + btnHtml +
         '</div></div>';
     }).join('') + '</div>';
@@ -2593,8 +2634,10 @@ function selMarca(catLabel, marcaId, el) {
         ? '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.22rem;font-weight:600;color:var(--green-dark);margin-bottom:0.7rem;margin-top:auto;">$' + p.precio.toLocaleString('es-AR') + '<small style="font-size:0.7rem;color:var(--text-light);font-family:Lora,serif;margin-left:5px;font-weight:400;">/ ' + p.peso + '</small></div>'
         : '<div class="pkg-card-precio-ph" style="margin-top:auto;">Precio a confirmar · ' + p.peso + '</div>';
 
-      var btnCarrito = '<button class="btn-agregar" onclick="addToCart(' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(p.peso) + ',' + (p.precio||0) + ',1)">' +
-        '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Agregar al carrito</button>';
+      var btnCarrito = _sinStock(pid)
+        ? _stockBadgeHtml(pid) + '<button class="btn-agregar btn-sinstock" disabled>Sin stock disponible</button>'
+        : _stockBadgeHtml(pid) + '<button class="btn-agregar" onclick="addToCart(' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(p.peso) + ',' + (p.precio||0) + ',1)">' +
+          '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Agregar al carrito</button>';
 
       return '<div class="prod-card">' +
         imgHtml +
@@ -2658,9 +2701,12 @@ function openNutri(catLabel, marcaId, idx) {
   if (prod.precio) {
     footer.innerHTML = '<div style="display:flex;gap:0.6rem;flex-wrap:wrap;">' +
       '<a href="#contacto" class="btn-consultar" style="flex:1;min-width:120px" onclick="closeNutri()">Consultar</a>' +
-      '<button class="btn-agregar" style="flex:2;min-width:160px" onclick="addToCart(' + JSON.stringify(pid) + ',' + JSON.stringify(prod.nombre) + ',' + JSON.stringify(prod.peso) + ',' + prod.precio + ',1);closeNutri()">' +
-      '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>' +
-      'Agregar al carrito</button></div>';
+      (_sinStock(pid)
+        ? '<button class="btn-agregar btn-sinstock" style="flex:2;min-width:160px" disabled>Sin stock disponible</button>'
+        : '<button class="btn-agregar" style="flex:2;min-width:160px" onclick="addToCart(' + JSON.stringify(pid) + ',' + JSON.stringify(prod.nombre) + ',' + JSON.stringify(prod.peso) + ',' + prod.precio + ',1);closeNutri()">' +
+          '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>' +
+          'Agregar al carrito</button>') +
+      '</div>';
   } else {
     footer.innerHTML = '<a href="#contacto" class="btn-consultar" onclick="closeNutri()">Consultar pedido</a>';
   }
@@ -2719,8 +2765,11 @@ function selAnimal(catKey, animalId, el) {
         '</button>' +
         '</div>' +
         '</div>' +
-        '<button class="btn-agregar" id="abtn-' + pid + '" onclick="addAnimalProd(' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(p.peso) + ',' + JSON.stringify([p.pc,p.p30,p.p60]) + ')">' +
-        '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Agregar al carrito</button>' +
+        _stockBadgeHtml(pid) +
+        (_sinStock(pid)
+          ? '<button class="btn-agregar btn-sinstock" disabled>Sin stock disponible</button>'
+          : '<button class="btn-agregar" id="abtn-' + pid + '" onclick="addAnimalProd(' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(p.peso) + ',' + JSON.stringify([p.pc,p.p30,p.p60]) + ')">' +
+            '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Agregar al carrito</button>') +
         '</div>';
     }).join('') +
     '</div>';

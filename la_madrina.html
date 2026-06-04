@@ -251,9 +251,14 @@
   .btn-wp:hover { background: #226b34; }
 
   /* FOOTER */
-  footer { background: #0d1f0d; color: rgba(248,244,236,0.55); text-align: center; padding: 2.5rem 2rem; font-family: 'Lora', serif; font-size: 0.85rem; border-top: 2px solid var(--gold); }
+  footer { background: #0d1f0d; color: rgba(248,244,236,0.55); text-align: center; padding: 2.5rem 2rem 2rem; font-family: 'Lora', serif; font-size: 0.85rem; border-top: 2px solid var(--gold); }
   .footer-name { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.2rem; margin-bottom: 0.4rem; }
   .footer-sub { font-style: italic; margin-bottom: 1rem; color: rgba(248,244,236,0.4); }
+  .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin: 1rem 0 0.8rem; }
+  .footer-links a { color: rgba(248,244,236,0.45); text-decoration: none; font-size: 0.78rem; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--gold-light); }
+  .footer-divider { width: 40px; height: 1px; background: rgba(200,134,42,0.3); margin: 1rem auto; }
+  .footer-copy { font-size: 0.75rem; color: rgba(248,244,236,0.3); margin-top: 0.5rem; }
 
   /* WA FLOTANTE */
   .wa-float { position: fixed; bottom: 28px; right: 28px; z-index: 200; width: 56px; height: 56px; background: #25d366; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.25); text-decoration: none; transition: transform 0.2s, background 0.2s; }
@@ -2417,8 +2422,22 @@
 <footer>
   <div class="footer-name">La Madrina</div>
   <div class="footer-sub">Forrajería de La Soñada</div>
-  <div>Hecho con dedicación · San Francisco, Córdoba</div>
+  <div>San Francisco, Córdoba · Argentina</div>
+  <div class="footer-divider"></div>
+  <div class="footer-links">
+    <a href="#productos">Catálogo</a>
+    <a href="#retiro">Puntos de retiro</a>
+    <a href="#envios">Envíos</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-copy">
+    © <span id="footerYear"></span> La Madrina Forrajería. Todos los derechos reservados.<br>
+    Los precios pueden variar sin previo aviso. Las imágenes son ilustrativas. El stock está sujeto a disponibilidad.<br>
+    Actividad comercial registrada · San Francisco, Córdoba, Argentina.
+  </div>
 </footer>
+<script>document.getElementById('footerYear').textContent = new Date().getFullYear();</script>
 
 <script>
 const imgs = {

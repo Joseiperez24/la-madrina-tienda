@@ -2510,7 +2510,7 @@ function doSearch(q, resultsId) {
                     p.toLowerCase().includes('viruta') || p.toLowerCase().includes('paja') ? 'camas' :
                     p.toLowerCase().includes('vitosan') || p.toLowerCase().includes('caballos') || p.toLowerCase().includes('gallina') || p.toLowerCase().includes('cerdo') || p.toLowerCase().includes('equino') || p.toLowerCase().includes('caprino') || p.toLowerCase().includes('conejo') ? 'campo' :
                     p.toLowerCase().includes('bozal') || p.toLowerCase().includes('freno') || p.toLowerCase().includes('cabezada') || p.toLowerCase().includes('lazo') || p.toLowerCase().includes('mandil') || p.toLowerCase().includes('bajera') || p.toLowerCase().includes('talabart') ? 'talabarteria' : 'mascotas';
-      return '<div class="search-result-item" onclick="goToProduct(' + JSON.stringify(section) + ')">' + highlighted + '</div>';
+      return '<div class="search-result-item" onclick="goToProduct(' + jsq(section) + ')">' + highlighted + '</div>';
     }).join('');
   }
   box.classList.add('visible');
@@ -2541,6 +2541,7 @@ window._stock = {};
     .catch(function () {});
 })();
 
+function jsq(v){ return "'" + String(v).replace(/\\/g,'\\\\').replace(/'/g,"\\'") + "'"; }
 function _sinStock(pid) {
   var s = window._stock[pid];
   if (!s) return false;
@@ -2769,7 +2770,7 @@ function mostrarCat(cat, el) {
   } else if (data.tipo === 'marcas_visual') {
     grid.innerHTML = '<div class="marcas-selector-grid">' +
       data.marcas.map(function(m) {
-        return '<div class="marca-sel-card" onclick="selMarca(' + JSON.stringify(data.label).replace(/"/g,"'") + ','+JSON.stringify(m.id).replace(/"/g,"'")+',this)" style="--mc:' + m.color + '">' +
+        return '<div class="marca-sel-card" onclick="selMarca(' + jsq(data.label).replace(/"/g,"'") + ','+jsq(m.id).replace(/"/g,"'")+',this)" style="--mc:' + m.color + '">' +
           '<img class="marca-sel-img" src="' + (m.lineupImg || pkgImgs[m.imgKey]) + '" loading="lazy" alt="' + m.nombre + '">' +
           '<div class="marca-sel-info">' +
           '<div class="marca-sel-nombre">' + m.nombre + '</div>' +
@@ -2817,12 +2818,12 @@ function mostrarCat(cat, el) {
       } else if (p.precio) {
         btnHtml = _stockBadgeHtml(pid) +
           '<div style="font-family:\'Cormorant Garamond\',serif;font-size:1.25rem;font-weight:600;color:var(--green-dark);margin-bottom:0.7rem;">$' + p.precio.toLocaleString('es-AR') + '<small style="font-size:0.72rem;color:var(--text-light);font-family:Lora,serif;margin-left:4px;">' + (p.unit||'') + '</small></div>' +
-          '<button class="btn-agregar" onclick="addToCart(' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(p.unit||'') + ',' + p.precio + ',1)">' +
+          '<button class="btn-agregar" onclick="addToCart(' + jsq(pid) + ',' + jsq(p.nombre) + ',' + jsq(p.unit||'') + ',' + p.precio + ',1)">' +
           '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Agregar al carrito</button>';
       } else {
         btnHtml = _stockBadgeHtml(pid) +
           '<div class="pkg-card-precio-ph">Precio a confirmar</div>' +
-          '<button class="btn-agregar" onclick="addToCart(' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(p.unit||'') + ',0,1)">' +
+          '<button class="btn-agregar" onclick="addToCart(' + jsq(pid) + ',' + jsq(p.nombre) + ',' + jsq(p.unit||'') + ',0,1)">' +
           '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Agregar al carrito</button>';
       }
       var badgeClass = sinStock ? 'prod-badge-sinstock' : (efectivamenteProx ? 'prod-badge-prox' : 'prod-badge-disponible');
@@ -2834,7 +2835,7 @@ function mostrarCat(cat, el) {
       return '<div class="prod-card">' +
         imgHtml +
         '<div class="prod-card-inner">' +
-        (!p.prox ? '<button class="fav-prod-btn" data-fav-id="' + pid + '" onclick="toggleFav(this,' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(data.label) + ',' + (p.precio||0) + ')"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>' : '') +
+        (!p.prox ? '<button class="fav-prod-btn" data-fav-id="' + pid + '" onclick="toggleFav(this,' + jsq(pid) + ',' + jsq(p.nombre) + ',' + jsq(data.label) + ',' + (p.precio||0) + ')"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>' : '') +
         '<div class="prod-nombre">' + p.nombre + '</div>' +
         '<div class="prod-desc">' + p.desc + '</div>' +
         '<span class="prod-badge ' + badgeClass + '">' + badgeText + '</span>' +
@@ -2874,7 +2875,7 @@ function renderMarca(cat, marca) {
         var pc = parseInt(p1.replace('.','').replace(',',''));
         var pid = 'vit_' + v.nombre.replace(/\W+/g,'_');
         return '<tr><td>' + v.nombre + '</td><td><span class="vtipo">' + tipo + '</span></td><td>$' + p1 + '</td><td>$' + p2 + '</td><td>$' + p3 + '</td>' +
-          '<td><button class="btn-agregar-sm" onclick="addToCart(' + JSON.stringify(pid) + ',' + JSON.stringify(v.nombre) + ',' + JSON.stringify(v.peso) + ',' + pc + ',1)">+ Agregar</button></td></tr>';
+          '<td><button class="btn-agregar-sm" onclick="addToCart(' + jsq(pid) + ',' + jsq(v.nombre) + ',' + jsq(v.peso) + ',' + pc + ',1)">+ Agregar</button></td></tr>';
       }).join('') +
       '</tbody></table>';
   } else {
@@ -2941,7 +2942,7 @@ function selMarca(catLabel, marcaId, el) {
         : '<div class="prod-card-img-ph"><svg viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg><span>Imagen próximamente</span></div>';
       var imgHtml = '<div class="prod-card-img-wrap">' + imgInner +
         '<div class="prod-img-overlay">' +
-        '<button class="btn-vista-rapida-overlay" onclick="openNutri('+JSON.stringify(catLabel)+','+JSON.stringify(marcaId)+','+i+');event.stopPropagation()">' +
+        '<button class="btn-vista-rapida-overlay" onclick="openNutri('+jsq(catLabel)+','+jsq(marcaId)+','+i+');event.stopPropagation()">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="13" height="13"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>' +
         'Vista rápida</button>' +
         '</div></div>';
@@ -2953,12 +2954,12 @@ function selMarca(catLabel, marcaId, el) {
 
       var btnCarrito = _sinStock(pid)
         ? _stockBadgeHtml(pid) + '<button class="btn-agregar btn-sinstock" disabled>Sin stock disponible</button>'
-        : _stockBadgeHtml(pid) + '<button class="btn-agregar" onclick="addToCart(' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(p.peso) + ',' + (p.precio||0) + ',1)">' +
+        : _stockBadgeHtml(pid) + '<button class="btn-agregar" onclick="addToCart(' + jsq(pid) + ',' + jsq(p.nombre) + ',' + jsq(p.peso) + ',' + (p.precio||0) + ',1)">' +
           '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Agregar al carrito</button>';
 
       return '<div class="prod-card">' +
         imgHtml +
-        '<button class="fav-prod-btn" data-fav-id="' + pid + '" onclick="toggleFav(this,' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(catLabel) + ',' + (p.precio||0) + ')"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>' +
+        '<button class="fav-prod-btn" data-fav-id="' + pid + '" onclick="toggleFav(this,' + jsq(pid) + ',' + jsq(p.nombre) + ',' + jsq(catLabel) + ',' + (p.precio||0) + ')"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>' +
         '<div class="prod-card-inner">' +
         '<div class="prod-nombre">' + tipoMascota + '</div>' +
         (descMascota ? '<div class="prod-desc">' + descMascota + '</div>' : '') +
@@ -3020,7 +3021,7 @@ function openNutri(catLabel, marcaId, idx) {
       '<a href="#contacto" class="btn-consultar" style="flex:1;min-width:120px" onclick="closeNutri()">Consultar</a>' +
       (_sinStock(pid)
         ? '<button class="btn-agregar btn-sinstock" style="flex:2;min-width:160px" disabled>Sin stock disponible</button>'
-        : '<button class="btn-agregar" style="flex:2;min-width:160px" onclick="addToCart(' + JSON.stringify(pid) + ',' + JSON.stringify(prod.nombre) + ',' + JSON.stringify(prod.peso) + ',' + prod.precio + ',1);closeNutri()">' +
+        : '<button class="btn-agregar" style="flex:2;min-width:160px" onclick="addToCart(' + jsq(pid) + ',' + jsq(prod.nombre) + ',' + jsq(prod.peso) + ',' + prod.precio + ',1);closeNutri()">' +
           '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>' +
           'Agregar al carrito</button>') +
       '</div>';
@@ -3065,19 +3066,19 @@ function selAnimal(catKey, animalId, el) {
       var pid = catKey + '_' + animalId + '_' + i;
       return '<div class="animal-prod-card">' +
         '<div class="animal-prod-img-wrap"><div class="prod-img-ph"><svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2zM4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Imagen próximamente</span></div></div>' +
-        '<button class="fav-prod-btn" data-fav-id="' + pid + '" onclick="toggleFav(this,' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',\'Animales de campo\',' + p.pc + ')"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>' +
+        '<button class="fav-prod-btn" data-fav-id="' + pid + '" onclick="toggleFav(this,' + jsq(pid) + ',' + jsq(p.nombre) + ',\'Animales de campo\',' + p.pc + ')"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>' +
         '<div class="animal-prod-info">' +
         '<div class="animal-prod-nombre">' + p.nombre + '</div>' +
         '<div class="animal-prod-desc">' + p.desc + '</div>' +
         '<div class="animal-prod-peso">▸ ' + p.peso + '</div>' +
         '<div class="precio-tabs" id="ptabs-' + pid + '">' +
-        '<button class="precio-tab sel" onclick="selPrecioTab(' + JSON.stringify(pid) + ',0,this)">' +
+        '<button class="precio-tab sel" onclick="selPrecioTab(' + jsq(pid) + ',0,this)">' +
           '<span class="pt-lbl">Contado</span><span class="pt-val">$' + p.pc.toLocaleString('es-AR') + '</span>' +
         '</button>' +
-        '<button class="precio-tab" onclick="selPrecioTab(' + JSON.stringify(pid) + ',1,this)">' +
+        '<button class="precio-tab" onclick="selPrecioTab(' + jsq(pid) + ',1,this)">' +
           '<span class="pt-lbl">30 días</span><span class="pt-val">$' + p.p30.toLocaleString('es-AR') + '</span>' +
         '</button>' +
-        '<button class="precio-tab" onclick="selPrecioTab(' + JSON.stringify(pid) + ',2,this)">' +
+        '<button class="precio-tab" onclick="selPrecioTab(' + jsq(pid) + ',2,this)">' +
           '<span class="pt-lbl">60 días</span><span class="pt-val">$' + p.p60.toLocaleString('es-AR') + '</span>' +
         '</button>' +
         '</div>' +
@@ -3085,7 +3086,7 @@ function selAnimal(catKey, animalId, el) {
         _stockBadgeHtml(pid) +
         (_sinStock(pid)
           ? '<button class="btn-agregar btn-sinstock" disabled>Sin stock disponible</button>'
-          : '<button class="btn-agregar" id="abtn-' + pid + '" onclick="addAnimalProd(' + JSON.stringify(pid) + ',' + JSON.stringify(p.nombre) + ',' + JSON.stringify(p.peso) + ',' + JSON.stringify([p.pc,p.p30,p.p60]) + ')">' +
+          : '<button class="btn-agregar" id="abtn-' + pid + '" onclick="addAnimalProd(' + jsq(pid) + ',' + jsq(p.nombre) + ',' + jsq(p.peso) + ',' + jsq([p.pc,p.p30,p.p60]) + ')">' +
             '<svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> Agregar al carrito</button>') +
         '</div>';
     }).join('') +
@@ -3209,11 +3210,11 @@ function renderCartItems() {
       '<div class="cart-item-precio">' + precioStr + '</div>' +
       '</div>' +
       '<div class="cart-qty">' +
-      '<button class="cart-qty-btn" onclick="updateQty(' + JSON.stringify(pid) + ',-1)">−</button>' +
+      '<button class="cart-qty-btn" onclick="updateQty(' + jsq(pid) + ',-1)">−</button>' +
       '<span class="cart-qty-num">' + it.qty + '</span>' +
-      '<button class="cart-qty-btn" onclick="updateQty(' + JSON.stringify(pid) + ',1)">+</button>' +
+      '<button class="cart-qty-btn" onclick="updateQty(' + jsq(pid) + ',1)">+</button>' +
       '</div>' +
-      '<button class="cart-item-remove" onclick="removeFromCart(' + JSON.stringify(pid) + ')" title="Quitar">✕</button>' +
+      '<button class="cart-item-remove" onclick="removeFromCart(' + jsq(pid) + ')" title="Quitar">✕</button>' +
       '</div>';
   }).join('');
   var total = cartTotal();
@@ -3792,7 +3793,7 @@ function renderFavs() {
         '<div class="fav-item-cat">' + f.cat + '</div>' +
         precioHtml +
       '</div>' +
-      '<button class="fav-item-remove" onclick="removeFav(' + JSON.stringify(f.id) + ')" title="Quitar de favoritos">✕</button>' +
+      '<button class="fav-item-remove" onclick="removeFav(' + jsq(f.id) + ')" title="Quitar de favoritos">✕</button>' +
       '</div>';
   }).join('');
 }

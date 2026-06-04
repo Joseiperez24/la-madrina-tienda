@@ -1851,12 +1851,231 @@
     border-radius: 2px; display: inline-block; letter-spacing: 0.04em;
   }
 
+  /* ───────────────── MEJORAS v2 (inspiradas en blau) ───────────────── */
+
+  /* Marquee de valores */
+  .lm-marquee {
+    background: var(--cream-dark);
+    border-top: 1px solid rgba(200,134,42,0.25);
+    border-bottom: 1px solid rgba(200,134,42,0.25);
+    padding: 14px 0; overflow: hidden;
+  }
+  @keyframes lm-ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  .lm-marquee-track {
+    display: flex; width: max-content; gap: 0;
+    animation: lm-ticker 32s linear infinite; will-change: transform;
+  }
+  .lm-marquee-track:hover { animation-play-state: paused; }
+  .lm-marquee-item {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 1.05rem; color: var(--text-mid); opacity: 0.82;
+    padding: 0 2.2rem; white-space: nowrap; display: flex; align-items: center; gap: 0.9rem;
+  }
+  .lm-marquee-item::before {
+    content: "✦"; color: var(--gold); font-size: 0.85rem; font-style: normal;
+  }
+
+  /* Pilares (3-up con icono) */
+  .lm-pilares {
+    padding: 4rem 2rem 2rem; background: var(--cream);
+  }
+  .lm-pilares-head { text-align: center; max-width: 640px; margin: 0 auto 2.5rem; }
+  .lm-pilares-grid {
+    max-width: 1080px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem;
+  }
+  .lm-pilar {
+    background: white; border: 1px solid rgba(200,134,42,0.18);
+    padding: 2rem 1.8rem; position: relative; overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+  .lm-pilar::after {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--green-light));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+  }
+  .lm-pilar:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(26,74,26,0.12); border-color: rgba(200,134,42,0.4); }
+  .lm-pilar:hover::after { transform: scaleX(1); }
+  .lm-pilar-ico {
+    width: 54px; height: 54px; border-radius: 50%;
+    background: rgba(200,134,42,0.12);
+    display: grid; place-items: center;
+    margin-bottom: 1.1rem; transition: background 0.3s;
+  }
+  .lm-pilar:hover .lm-pilar-ico { background: var(--gold); }
+  .lm-pilar-ico svg { width: 24px; height: 24px; stroke: var(--green-dark); fill: none; stroke-width: 1.8; }
+  .lm-pilar:hover .lm-pilar-ico svg { stroke: white; }
+  .lm-pilar h3 {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600;
+    color: var(--green-dark); margin-bottom: 0.5rem;
+  }
+  .lm-pilar p {
+    font-family: 'Lora', serif; font-size: 0.92rem; color: var(--text-light);
+    line-height: 1.65;
+  }
+  @media (max-width: 768px) {
+    .lm-pilares { padding: 3rem 1.2rem 1rem; }
+    .lm-pilares-grid { grid-template-columns: 1fr; gap: 1rem; }
+  }
+
+  /* Quick category pill-tabs (sticky bar para Productos) */
+  .lm-cat-tabs-wrap {
+    position: sticky; top: 116px; z-index: 30;
+    background: var(--cream); padding: 0.9rem 1rem;
+    margin: 1rem auto 2rem; max-width: 1080px;
+    border-bottom: 1px solid rgba(200,134,42,0.22);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .lm-cat-tabs {
+    display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;
+  }
+  .lm-cat-tab {
+    padding: 0.55rem 1.2rem; border-radius: 999px;
+    border: 1.5px solid rgba(26,74,26,0.18);
+    background: transparent; cursor: pointer;
+    font-family: 'Lora', serif; font-size: 0.85rem; font-weight: 600;
+    color: var(--green-dark); transition: all 0.22s; white-space: nowrap;
+  }
+  .lm-cat-tab:hover { border-color: var(--gold); color: var(--gold); }
+  .lm-cat-tab.active {
+    background: var(--green-dark); color: var(--cream); border-color: var(--green-dark);
+  }
+  @media (max-width: 600px) {
+    .lm-cat-tabs-wrap { top: 100px; padding: 0.7rem 0.5rem; }
+    .lm-cat-tabs { overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start;
+      scrollbar-width: none; -webkit-overflow-scrolling: touch; padding: 0 0.5rem; }
+    .lm-cat-tabs::-webkit-scrollbar { display: none; }
+    .lm-cat-tab { font-size: 0.78rem; padding: 0.5rem 1rem; flex-shrink: 0; }
+  }
+
+  /* Brand eyebrow tag en prod-card */
+  .prod-eyebrow {
+    font-family: 'Lora', serif; font-size: 0.66rem; font-weight: 700;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 0.45rem; display: block;
+  }
+
+  /* Realce hover sutil sobre prod-card */
+  .prod-card { transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; }
+  .prod-card::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--green-light), var(--gold));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.42s;
+    z-index: 2;
+  }
+  .prod-card:hover::before { transform: scaleX(1); }
+
+  /* Voces de clientes */
+  .lm-voces {
+    padding: 5rem 2rem; background: var(--cream-dark);
+    border-top: 1px solid rgba(200,134,42,0.2);
+    border-bottom: 1px solid rgba(200,134,42,0.2);
+  }
+  .lm-voces-head { text-align: center; margin-bottom: 3rem; }
+  .lm-voces-grid {
+    max-width: 1080px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem;
+  }
+  .lm-voz {
+    background: white; padding: 2rem 1.8rem;
+    border: 1px solid rgba(200,134,42,0.2);
+    border-left: 3px solid var(--gold);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex; flex-direction: column;
+  }
+  .lm-voz:hover { transform: translateY(-4px); box-shadow: 0 18px 40px rgba(26,74,26,0.14); }
+  .lm-voz-stars { color: var(--gold); font-size: 0.9rem; letter-spacing: 3px; margin-bottom: 0.9rem; }
+  .lm-voz-quote {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: 1.08rem; color: var(--text-dark); line-height: 1.55;
+    margin-bottom: 1.4rem; flex: 1;
+  }
+  .lm-voz-autor {
+    font-family: 'Lora', serif; font-size: 0.85rem; color: var(--text-light);
+    padding-top: 0.9rem; border-top: 1px solid rgba(200,134,42,0.2);
+  }
+  .lm-voz-autor strong { display: block; color: var(--green-dark); font-weight: 600; margin-bottom: 0.15rem; }
+  @media (max-width: 900px) { .lm-voces-grid { grid-template-columns: 1fr; gap: 1rem; } .lm-voces { padding: 3.5rem 1.2rem; } }
+
+/* ── MP CHECKOUT MODAL ─────────────────────────────── */
+.mpco-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);z-index:970;opacity:0;pointer-events:none;transition:opacity .3s}
+.mpco-backdrop.open{opacity:1;pointer-events:auto}
+.mpco-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-48%);width:min(780px,96vw);max-height:92vh;background:#fff;border-radius:20px;z-index:971;display:flex;flex-direction:column;box-shadow:0 40px 100px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s}
+.mpco-modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+.mpco-head{display:flex;justify-content:space-between;align-items:center;padding:20px 28px 16px;border-bottom:1px solid #eee;flex-shrink:0}
+.mpco-head h3{font-size:20px;font-weight:600;margin:0;font-family:'Inter',sans-serif}
+.mpco-close{background:none;border:none;font-size:26px;cursor:pointer;opacity:.4;transition:opacity .2s;padding:4px;line-height:1}
+.mpco-close:hover{opacity:1}
+.mpco-body{overflow-y:auto;padding:24px 28px;flex:1}
+.mpco-foot{padding:18px 28px;border-top:1px solid #eee;flex-shrink:0;background:#f8f9fa;border-radius:0 0 20px 20px}
+.co-steps{display:flex;align-items:center;padding:13px 28px;border-bottom:1px solid #eee;flex-shrink:0}
+.co-step{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:500;opacity:.35;transition:all .2s;white-space:nowrap}
+.co-step span{width:22px;height:22px;border-radius:50%;background:#f0f0f0;border:1.5px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:all .2s;flex-shrink:0}
+.co-step.active{opacity:1;color:#3b82f6}.co-step.active span{background:#3b82f6;border-color:#3b82f6;color:#fff}
+.co-step.done{opacity:.7}.co-step.done span{background:#111;border-color:#111;color:#fff}
+.co-step-sep{flex:1;height:1px;background:#eee;margin:0 10px}
+.co-panel{animation:coFadeIn .22s ease}
+@keyframes coFadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.cf-field{margin-bottom:12px}
+.cf-field label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.55;margin-bottom:4px}
+.cf-inp,.cf-sel{width:100%;padding:11px 15px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:inherit;font-size:13.5px;background:#fff;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.cf-inp:focus,.cf-sel:focus{border-color:#3b82f6}
+.cf-row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.cf-disc-row{display:flex;gap:8px}
+.cf-disc-row .cf-inp{flex:1;text-transform:uppercase;letter-spacing:.06em}
+.cf-apply{padding:11px 14px;border-radius:10px;border:1.5px solid #111;background:transparent;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.cf-apply:hover{background:#f5c518;border-color:#f5c518}
+.cf-msg{font-size:11px;padding:5px 12px;border-radius:8px;display:none;margin-top:4px}
+.cf-msg.ok{background:rgba(34,197,94,.1);color:#166534;display:block}
+.cf-msg.err{background:rgba(239,68,68,.1);color:#991b1b;display:block}
+.co-items-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.co-it{display:flex;gap:8px;align-items:baseline;font-size:13px}
+.co-it-name{flex:1;line-height:1.3}
+.co-it-qty{opacity:.45;font-size:11px;white-space:nowrap}
+.co-it-price{white-space:nowrap;font-weight:500}
+.co-totals{background:#f8f9fa;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:5px}
+.co-tr{display:flex;justify-content:space-between;font-size:13px;opacity:.65}
+.co-tr.savings{color:#166534;opacity:1}
+.co-tr.main{opacity:1;font-size:16px;border-top:1px solid #eee;padding-top:8px;margin-top:4px}
+.co-tr.main span:last-child{font-size:20px;font-weight:700}
+.co-grid{display:grid;grid-template-columns:1fr 1.35fr;gap:28px}
+@media(max-width:640px){.co-grid{grid-template-columns:1fr}}
+.co-mini-total{background:#f8f9fa;border-radius:12px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-size:14px}
+.co-mini-total strong{font-size:22px;font-weight:700}
+#cardPaymentBrick_container{min-height:160px}
+.co-security-strip{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid #eee;font-size:11px;opacity:.45;flex-wrap:wrap;text-align:center;line-height:1.5}
+.mpco-confirm-btn{width:100%;padding:15px;border-radius:10px;border:none;background:#111;color:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .25s}
+.mpco-confirm-btn:hover:not(:disabled){background:#333;transform:translateY(-1px)}
+.mpco-confirm-btn:disabled{opacity:.4;cursor:default}
+.co-foot-btns{display:flex;gap:10px;align-items:center}
+.co-back-btn{padding:15px 20px;border-radius:10px;border:1.5px solid #e2e8f0;background:transparent;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.co-back-btn:hover{border-color:#3b82f6;background:#eff6ff}
+.ord-confirm{text-align:center;padding:40px 20px;display:none}
+.ord-confirm.visible{display:block}
+.ord-confirm h3{font-size:26px;font-weight:600;margin-bottom:10px;font-family:inherit}
+.ord-confirm p{opacity:.7;font-size:14px;line-height:1.65;margin-bottom:6px}
+.ord-number-badge{display:inline-block;background:#fef08a;color:#111;font-size:22px;font-weight:700;padding:8px 28px;border-radius:999px;margin:16px 0 10px}
+.co-pay-err{display:none;background:rgba(239,68,68,.1);color:#991b1b;border-radius:8px;padding:10px 14px;font-size:13px;margin-top:12px;text-align:center}
 </style>
+<script src="https://sdk.mercadopago.com/js/v2"></script>
 </head>
 <body>
 
+<!-- BARRA DE ANUNCIO (controlada desde admin) -->
+<div id="lm-announce-bar" style="display:none;background:var(--green-dark);color:var(--cream);text-align:center;padding:9px 2rem;font-family:'Lora',serif;font-size:0.82rem;letter-spacing:0.16em;text-transform:uppercase;border-bottom:2px solid var(--gold);position:relative;z-index:190;">
+  <span id="lm-announce-text"></span>
+</div>
+
+<!-- AVISO ESPECIAL (controlado desde admin) -->
+<div id="lm-aviso-wrap" style="display:none;max-width:900px;margin:2rem auto 0;padding:0 1.5rem;">
+  <div style="background:rgba(200,134,42,0.1);border-left:3px solid var(--gold);padding:1rem 1.4rem;border-radius:0 8px 8px 0;display:flex;align-items:flex-start;gap:1rem;">
+    <svg viewBox="0 0 24 24" style="width:20px;height:20px;flex-shrink:0;margin-top:2px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p id="lm-aviso-text" style="font-family:'Lora',serif;font-size:0.95rem;color:var(--text-dark);line-height:1.65;margin:0;"></p>
+  </div>
+</div>
+
 <!-- WA FLOTANTE -->
-<a href="https://wa.me/5493564679338" class="wa-float" target="_blank" title="Escribinos por WhatsApp">
+<a id="lm-wa-link" href="https://wa.me/5493564679338" class="wa-float" target="_blank" title="Escribinos por WhatsApp">
   <div class="wa-pulse"></div>
   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
@@ -1864,7 +2083,7 @@
 <div class="nav-wrapper" id="navWrapper">
 <nav>
   <div class="nav-left">
-    <a class="nav-logo-btn" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" title="La Madrina Forrajería">
+    <a class="nav-logo-btn" href="/" title="La Madrina Forrajería">
       <img class="nav-logo-img" src="imgs/logos/logorecortado.JPG" alt="La Madrina">
     </a>
   </div>
@@ -1919,12 +2138,12 @@
   <img class="hero-bg" id="heroBg" src="imgs/decoracion-fondos/vacasfrente.jpeg" alt="">
   <div class="hero-overlay"></div>
   <div class="hero-content">
-    <div class="hero-badge">✦ Forrajería de La Soñada ✦</div>
+    <div class="hero-badge" id="cfg-hero-badge">✦ Forrajería de La Soñada ✦</div>
     <h1>La <em>Madrina</em></h1>
-    <p class="hero-sub" style="margin-top:1.2rem;margin-bottom:0.1rem;">Nutrición y cuidado animal</p>
-    <p class="hero-sub" style="margin-top:0;margin-bottom:1.8rem;">Básicos para huerta</p>
+    <p class="hero-sub" id="cfg-hero-sub1" style="margin-top:1.2rem;margin-bottom:0.1rem;">Nutrición y cuidado animal</p>
+    <p class="hero-sub" id="cfg-hero-sub2" style="margin-top:0;margin-bottom:1.8rem;">Básicos para huerta</p>
     <div class="hero-divider"></div>
-    <p class="hero-desc">Entrega en San Francisco y zona, o retiro en depósito. Atención personalizada con la calidad del campo.</p>
+    <p class="hero-desc" id="cfg-hero-desc">Entrega en San Francisco y zona, o retiro en depósito. Atención personalizada con la calidad del campo.</p>
     <div class="hero-btns">
       <a href="#productos" class="btn-primary">Ver productos</a>
       <a href="#contacto" class="btn-outline">Consultar pedido</a>
@@ -1939,6 +2158,61 @@
   <div class="img-strip-item"><img loading="lazy" src="imgs/decoracion-fondos/caballo.jpeg" alt="Caballo en campo" style="object-position: center 30%;"></div>
   <div class="img-strip-item"><img loading="lazy" src="imgs/avenamaizfardo/identidicarproducto4.jpeg" alt="Espigas de avena" style="object-position: center center;"></div>
 </div>
+
+<!-- MARQUEE DE VALORES (estilo blau) -->
+<div class="lm-marquee" aria-hidden="true">
+  <div class="lm-marquee-track">
+    <div class="lm-marquee-item">Atención personalizada</div>
+    <div class="lm-marquee-item">Calidad del campo</div>
+    <div class="lm-marquee-item">Envíos en San Francisco y zona</div>
+    <div class="lm-marquee-item">Retiro en dos depósitos</div>
+    <div class="lm-marquee-item">Balanceados premium</div>
+    <div class="lm-marquee-item">Forrajes &amp; granos seleccionados</div>
+    <div class="lm-marquee-item">Talabartería tradicional</div>
+    <div class="lm-marquee-item">Pago con Mercado Pago</div>
+    <!-- duplicado para loop infinito -->
+    <div class="lm-marquee-item">Atención personalizada</div>
+    <div class="lm-marquee-item">Calidad del campo</div>
+    <div class="lm-marquee-item">Envíos en San Francisco y zona</div>
+    <div class="lm-marquee-item">Retiro en dos depósitos</div>
+    <div class="lm-marquee-item">Balanceados premium</div>
+    <div class="lm-marquee-item">Forrajes &amp; granos seleccionados</div>
+    <div class="lm-marquee-item">Talabartería tradicional</div>
+    <div class="lm-marquee-item">Pago con Mercado Pago</div>
+  </div>
+</div>
+
+<!-- PILARES (3-up icon cards estilo blau) -->
+<section class="lm-pilares">
+  <div class="lm-pilares-head reveal">
+    <span class="section-label">Por qué La Madrina</span>
+    <h2 class="section-title">Lo que nos diferencia</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="lm-pilares-grid">
+    <div class="lm-pilar reveal">
+      <div class="lm-pilar-ico">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .9-4.5 4.4 1 6.7L12 17l-5.5 3 1-6.7L3 8.9 9 8z"/></svg>
+      </div>
+      <h3>Calidad del campo</h3>
+      <p>Trabajamos con marcas confiables y productores locales. Cada bolsa pasa por nuestro depósito antes de llegar a tu mesa.</p>
+    </div>
+    <div class="lm-pilar reveal">
+      <div class="lm-pilar-ico">
+        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      </div>
+      <h3>Asesoramiento personal</h3>
+      <p>Te ayudamos a elegir el balanceado, el forraje o la cama ideal para tu animal. Consultá por WhatsApp y respondemos rápido.</p>
+    </div>
+    <div class="lm-pilar reveal">
+      <div class="lm-pilar-ico">
+        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="1.5"/><circle cx="18.5" cy="18.5" r="1.5"/></svg>
+      </div>
+      <h3>Llevamos hasta tu puerta</h3>
+      <p>Entrega en San Francisco y zona para pedidos &lt;50 kg. Para pedidos grandes coordinamos vía cargo o retiro en depósito.</p>
+    </div>
+  </div>
+</section>
 
 <!-- BANNER ENVIOS -->
 <div class="envios-banner">
@@ -2003,6 +2277,17 @@
       </div>
     </div>
   </div>
+
+  <!-- Pill-tabs de acceso rápido (sticky) -->
+  <div class="lm-cat-tabs-wrap">
+    <div class="lm-cat-tabs" id="lmCatTabs">
+      <button class="lm-cat-tab" data-cat="mascotas" onclick="lmQuickCat('mascotas', this)">Mascotas</button>
+      <button class="lm-cat-tab" data-cat="campo" onclick="lmQuickCat('campo', this)">Animales de campo</button>
+      <button class="lm-cat-tab" data-cat="forrajes" onclick="lmQuickCat('forrajes', this)">Forrajes y granos</button>
+      <button class="lm-cat-tab" data-cat="camas" onclick="lmQuickCat('camas', this)">Camas y boxes</button>
+      <button class="lm-cat-tab" data-cat="talabarteria" onclick="lmQuickCat('talabarteria', this)">Talabartería</button>
+    </div>
+  </div>
 </section>
 
 <!-- LISTA PRODUCTOS -->
@@ -2021,6 +2306,32 @@
   <div class="campo-galeria-item"><img loading="lazy" src="imgs/avenamaizfardo/maizproducto.jpeg" alt="Maíz partido" style="object-position: center center;"></div>
   <div class="campo-galeria-item"><img loading="lazy" src="imgs/avenamaizfardo/maizfondo2.jpeg" alt="Choclo en arpillera" style="object-position: center center;"></div>
 </div>
+
+<!-- VOCES DE CLIENTES (estilo blau) -->
+<section class="lm-voces">
+  <div class="lm-voces-head reveal">
+    <span class="section-label">Lo que dicen</span>
+    <h2 class="section-title">Voces del campo</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="lm-voces-grid">
+    <div class="lm-voz reveal">
+      <div class="lm-voz-stars">★★★★★</div>
+      <p class="lm-voz-quote">"Hace dos años que les compro el balanceado para mis perros y siempre lo mismo: producto fresco, asesoramiento real y entrega rápida en San Francisco."</p>
+      <div class="lm-voz-autor"><strong>Mariana G.</strong>San Francisco</div>
+    </div>
+    <div class="lm-voz reveal">
+      <div class="lm-voz-stars">★★★★★</div>
+      <p class="lm-voz-quote">"Pido fardos de alfalfa y maíz partido para los caballos. Llegan impecables y siempre cumplen los tiempos. Atención de campo, como tiene que ser."</p>
+      <div class="lm-voz-autor"><strong>Daniel R.</strong>Frontera</div>
+    </div>
+    <div class="lm-voz reveal">
+      <div class="lm-voz-stars">★★★★★</div>
+      <p class="lm-voz-quote">"Me asesoraron para cambiarle el alimento a mi gato y la diferencia se nota. Recomiendo La Madrina sin dudarlo."</p>
+      <div class="lm-voz-autor"><strong>Luciana M.</strong>Josefina</div>
+    </div>
+  </div>
+</section>
 
 <!-- CÓMO COMPRAR -->
 <section id="como-comprar">
@@ -2427,7 +2738,22 @@ const catalogo = {
   }
 };
 
+// Pill-tab rápido que delega a mostrarCat usando la cat-card correspondiente
+function lmQuickCat(cat, btn) {
+  var orden = ['mascotas','campo','forrajes','camas','talabarteria'];
+  var idx = orden.indexOf(cat);
+  var cards = document.querySelectorAll('#productos .cat-grid .cat-card');
+  if (idx < 0 || !cards[idx]) return;
+  document.querySelectorAll('.lm-cat-tab').forEach(function(t){ t.classList.remove('active'); });
+  btn.classList.add('active');
+  mostrarCat(cat, cards[idx]);
+}
+
 function mostrarCat(cat, el) {
+  // sincronizar pill-tab activo
+  document.querySelectorAll('.lm-cat-tab').forEach(function(t){
+    t.classList.toggle('active', t.getAttribute('data-cat') === cat);
+  });
   const data = catalogo[cat];
   const lista = document.getElementById('lista-productos');
   const grid = document.getElementById('prod-grid');
@@ -3053,8 +3379,8 @@ function armarItemsCart() {
   });
 }
 
-/* ── PAGO CON MERCADO PAGO ───────────────────── */
-async function pagarConMP() {
+/* ── PAGO CON MERCADO PAGO (abre checkout Brick) ── */
+function pagarConMP() {
   var buyer = validarFormulario(true);
   if (!buyer) return;
 
@@ -3066,40 +3392,251 @@ async function pagarConMP() {
     return;
   }
 
-  var btn = document.getElementById('btnMP');
-  var orig = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = 'Creando pago…';
+  closeCheckout();
 
-  try {
-    var resp = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: armarItemsCart(), buyer: buyer }),
-    });
-    var data = await resp.json();
-    if (!resp.ok || !data.url) throw new Error(data.error || 'Error al crear el pago');
+  // Pre-llenar datos del nuevo modal
+  document.getElementById('cfName').value  = buyer.nombre || '';
+  document.getElementById('cfEmail').value = buyer.email  || '';
+  document.getElementById('cfPhone').value = buyer.telefono || '';
+  document.getElementById('cfNotes').value = buyer.notas  || '';
 
-    /* Guardar pedido pendiente en localStorage (success.html lo lee para mostrarlo) */
-    try {
-      localStorage.setItem('lm_last_order', JSON.stringify({
-        buyer: buyer,
-        items: armarItemsCart(),
-        total: cartTotal(),
-        fecha: new Date().toISOString(),
-        metodo: 'mp',
-      }));
-    } catch(e) {}
+  openMPCheckout();
+}
 
-    window.location.href = data.url;
-  } catch (err) {
-    console.error(err);
-    btn.disabled = false;
-    btn.innerHTML = orig;
-    var errEl = document.getElementById('chkError');
-    errEl.textContent = (err && err.message) || 'No se pudo procesar el pago. Intentá de nuevo o elegí otro método.';
-    errEl.classList.add('show');
+// ─── MP CHECKOUT (CardPayment Brick) ───────────────────────────────────────
+var MPCO_FN_URL  = 'https://znmbjwooxjnuttarclft.supabase.co/functions/v1';
+var MPCO_ANON    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpubWJqd29veGpudXR0YXJjbGZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY5OTgyNTksImV4cCI6MjA5MjU3NDI1OX0.iJdJ4-rGTiou-xd78pMQAEotI4Lx2SioGycA5gykYIQ';
+var MPCO_PUB_KEY = 'TEST-8a61f265-c784-47b0-a91d-b349aedf0225';
+
+var mpcoDiscount = { code: '', pct: 0 };
+var mpcoShipping = null;
+var mpcoCurrentStep = 1;
+var mpcoBrickController = null;
+var mpcoShippingRates = [];
+
+function fmtMPCO(n) {
+  return new Intl.NumberFormat('es-AR', { style:'currency', currency:'ARS', maximumFractionDigits:0 }).format(n);
+}
+
+function openMPCheckout() {
+  mpcoDiscount = { code:'', pct:0 };
+  mpcoShipping = null;
+  mpcoCurrentStep = 1;
+  document.getElementById('ordConfirm').classList.remove('visible');
+  document.getElementById('coStep1').style.display = '';
+  document.getElementById('coStep2').style.display = 'none';
+  document.getElementById('coStep3').style.display = 'none';
+  document.getElementById('coStepsBar').style.display = '';
+  document.getElementById('mpcoFoot').style.display = '';
+  document.getElementById('cfDiscountMsg').className = 'cf-msg';
+  document.getElementById('cfDiscountCode').value = '';
+  mpcoUpdateDots(1);
+  document.getElementById('mpcoBackdrop').classList.add('open');
+  document.getElementById('mpcoModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  mpcoLoadRates();
+}
+
+function closeMPCheckout() {
+  document.getElementById('mpcoBackdrop').classList.remove('open');
+  document.getElementById('mpcoModal').classList.remove('open');
+  document.body.style.overflow = '';
+  if (mpcoBrickController) { mpcoBrickController.unmount().catch(function(){}); mpcoBrickController = null; }
+}
+
+function mpcoUpdateDots(step) {
+  [1,2,3].forEach(function(n) {
+    var dot = document.getElementById('coStepDot' + n);
+    dot.classList.remove('active','done');
+    if (n < step) dot.classList.add('done');
+    else if (n === step) dot.classList.add('active');
+  });
+}
+
+function mpcoCalc() {
+  var sub  = cartTotal();
+  var disc = mpcoDiscount.pct ? Math.round(sub * mpcoDiscount.pct / 100) : 0;
+  var ship = mpcoShipping ? (sub - disc >= (mpcoShipping.free_from || 60000) ? 0 : mpcoShipping.rate) : null;
+  var total = ship !== null ? sub - disc + ship : null;
+  return { sub: sub, disc: disc, ship: ship, total: total };
+}
+
+function mpcoLoadRates() {
+  if (mpcoShippingRates.length) return;
+  fetch('https://znmbjwooxjnuttarclft.supabase.co/rest/v1/shipping_rates?select=*', {
+    headers: { 'apikey': MPCO_ANON, 'Authorization': 'Bearer ' + MPCO_ANON }
+  }).then(function(r){ return r.json(); }).then(function(d){ mpcoShippingRates = d || []; }).catch(function(){});
+}
+
+document.getElementById('cfProvince').addEventListener('change', function(e) {
+  var prov = e.target.value;
+  mpcoShipping = mpcoShippingRates.find(function(r){ return r.province === prov; }) || null;
+  if (mpcoCurrentStep === 2) mpcoRenderSummary();
+});
+
+function mpcoRenderSummary() {
+  var items = Object.values(cart);
+  document.getElementById('coItemsList').innerHTML = items.map(function(it) {
+    return '<div class="co-it"><span class="co-it-name">' + (it.nombre||'').split('—')[0].trim() + '</span>' +
+      '<span class="co-it-qty">×' + it.qty + '</span>' +
+      '<span class="co-it-price">' + fmtMPCO((it.precio||0) * it.qty) + '</span></div>';
+  }).join('');
+  var c = mpcoCalc();
+  document.getElementById('coSubtotal').textContent = fmtMPCO(c.sub);
+  if (c.disc) {
+    document.getElementById('coDiscountRow').style.display = '';
+    document.getElementById('coDiscountLabel').textContent = 'Descuento (' + mpcoDiscount.pct + '%)';
+    document.getElementById('coDiscountAmt').textContent = '-' + fmtMPCO(c.disc);
+  } else {
+    document.getElementById('coDiscountRow').style.display = 'none';
   }
+  document.getElementById('coShipping').textContent = c.ship === null ? '—' : (c.ship === 0 ? 'Gratis ✓' : fmtMPCO(c.ship));
+  var totalEl = document.getElementById('coTotal');
+  totalEl.textContent = c.total !== null ? fmtMPCO(c.total) : '—';
+  totalEl.style.opacity = c.total !== null ? '1' : '.45';
+}
+
+document.getElementById('cfApplyDiscount').addEventListener('click', async function() {
+  var code = document.getElementById('cfDiscountCode').value.trim().toUpperCase();
+  var msgEl = document.getElementById('cfDiscountMsg');
+  if (!code) return;
+  msgEl.className = 'cf-msg'; msgEl.textContent = 'Verificando…'; msgEl.style.display = 'block';
+  try {
+    var res = await fetch(MPCO_FN_URL + '/validate-discount', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': MPCO_ANON },
+      body: JSON.stringify({ code: code }),
+    });
+    var data = await res.json();
+    if (!res.ok || data.error) {
+      msgEl.className = 'cf-msg err'; msgEl.textContent = data.error || 'Código inválido';
+      mpcoDiscount = { code:'', pct:0 };
+    } else {
+      msgEl.className = 'cf-msg ok'; msgEl.textContent = '✓ ' + data.discount_pct + '% de descuento aplicado';
+      mpcoDiscount = { code: data.code, pct: Number(data.discount_pct) };
+    }
+    mpcoRenderSummary();
+  } catch(e) {
+    msgEl.className = 'cf-msg err'; msgEl.textContent = 'Error al verificar el código';
+  }
+});
+
+function mpcoValidateStep1() {
+  var ok = true;
+  ['cfName','cfEmail','cfPhone','cfStreet','cfCity','cfZip'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el.value.trim()) { el.style.borderColor = '#ef4444'; ok = false; }
+    else el.style.borderColor = '';
+  });
+  var prov = document.getElementById('cfProvince');
+  if (!prov.value) { prov.style.borderColor = '#ef4444'; ok = false; }
+  else prov.style.borderColor = '';
+  return ok;
+}
+
+async function mpcoGoToStep(step) {
+  if (step === 2 && !mpcoValidateStep1()) return;
+  document.getElementById('coStep' + mpcoCurrentStep).style.display = 'none';
+  mpcoCurrentStep = step;
+  document.getElementById('coStep' + step).style.display = '';
+  mpcoUpdateDots(step);
+  document.getElementById('coBackBtn').style.display = step > 1 ? '' : 'none';
+  var confirmBtn = document.getElementById('mpcoConfirmBtn');
+  if (step === 3) {
+    confirmBtn.style.display = 'none';
+    var c = mpcoCalc();
+    var amount = c.total !== null ? c.total : c.sub;
+    document.getElementById('coMiniTotal').textContent = fmtMPCO(amount);
+    await mpcoMountBrick(amount);
+  } else {
+    confirmBtn.style.display = ''; confirmBtn.disabled = false; confirmBtn.textContent = 'Continuar →';
+    if (step === 2) mpcoRenderSummary();
+  }
+}
+
+document.getElementById('mpcoConfirmBtn').addEventListener('click', async function() {
+  if (mpcoCurrentStep < 3) await mpcoGoToStep(mpcoCurrentStep + 1);
+});
+
+document.getElementById('coBackBtn').addEventListener('click', async function() {
+  if (mpcoCurrentStep <= 1) return;
+  document.getElementById('coStep' + mpcoCurrentStep).style.display = 'none';
+  mpcoCurrentStep--;
+  document.getElementById('coStep' + mpcoCurrentStep).style.display = '';
+  mpcoUpdateDots(mpcoCurrentStep);
+  document.getElementById('coBackBtn').style.display = mpcoCurrentStep > 1 ? '' : 'none';
+  var confirmBtn = document.getElementById('mpcoConfirmBtn');
+  confirmBtn.style.display = ''; confirmBtn.disabled = false; confirmBtn.textContent = 'Continuar →';
+  if (mpcoBrickController) { try { await mpcoBrickController.unmount(); } catch(e){} mpcoBrickController = null; }
+});
+
+async function mpcoMountBrick(amount) {
+  if (mpcoBrickController) { try { await mpcoBrickController.unmount(); } catch(e){} mpcoBrickController = null; }
+  var container = document.getElementById('cardPaymentBrick_container');
+  container.innerHTML = '<div style="text-align:center;padding:28px;opacity:.45;font-size:14px">Cargando formulario de pago…</div>';
+  if (!MPCO_PUB_KEY) {
+    container.innerHTML = '<p style="color:#ef4444;text-align:center;padding:20px;font-size:14px">⚠ Falta configurar la MP Public Key. Agregá <code>MPCO_PUB_KEY</code> en la_madrina.html.</p>';
+    return;
+  }
+  try {
+    var mp = new MercadoPago(MPCO_PUB_KEY, { locale: 'es-AR' });
+    var builder = mp.bricks();
+    mpcoBrickController = await builder.create('cardPayment', 'cardPaymentBrick_container', {
+      initialization: { amount: amount },
+      customization: { paymentMethods: { minInstallments: 1, maxInstallments: 3 } },
+      callbacks: {
+        onReady: function() {},
+        onSubmit: async function(formData) {
+          var errEl = document.getElementById('coPayErr');
+          errEl.style.display = 'none';
+          try { await mpcoProcessPayment(formData); }
+          catch(e) { errEl.textContent = e.message || 'Error al procesar el pago. Intentá de nuevo.'; errEl.style.display = 'block'; throw e; }
+        },
+        onError: function(err) { console.error('MP Brick error:', err); },
+      },
+    });
+  } catch(e) {
+    container.innerHTML = '<p style="color:#ef4444;text-align:center;padding:20px;font-size:14px">Error al cargar el formulario de pago. Recargá la página e intentá de nuevo.</p>';
+  }
+}
+
+async function mpcoProcessPayment(formData) {
+  function gv(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+  var c = mpcoCalc();
+  var amount = c.total !== null ? c.total : c.sub;
+  var items = Object.keys(cart).map(function(pid) {
+    var it = cart[pid];
+    return { id: pid, name: (it.nombre||'').split('—')[0].trim(), price: it.precio || 0, qty: it.qty };
+  });
+  var res = await fetch(MPCO_FN_URL + '/process-payment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': MPCO_ANON },
+    body: JSON.stringify(Object.assign({}, formData, {
+      customer: {
+        name: gv('cfName'), email: gv('cfEmail'), phone: gv('cfPhone'),
+        address: { street: gv('cfStreet'), city: gv('cfCity'), zip: gv('cfZip'), province: gv('cfProvince') },
+      },
+      items: items, subtotal: c.sub,
+      discount_code: mpcoDiscount.code || null, discount_amount: c.disc || 0,
+      shipping_cost: c.ship || 0, total: amount, notes: gv('cfNotes') || null,
+    })),
+  });
+  var data = await res.json();
+  if (!res.ok || data.error) throw new Error(data.error || 'Error al procesar el pago');
+
+  // Vaciar carrito
+  cart = {}; saveCart(); updateCartBadge(); renderCartItems();
+
+  // Mostrar confirmación
+  document.getElementById('coStep3').style.display = 'none';
+  document.getElementById('coStepsBar').style.display = 'none';
+  document.getElementById('mpcoFoot').style.display = 'none';
+  document.getElementById('ordConfirmTitle').textContent = data.status === 'approved' ? '¡Pago confirmado!' : '¡Pedido recibido!';
+  document.getElementById('ordConfirmMsg').textContent = data.status === 'approved'
+    ? 'Tu pago fue procesado exitosamente. Te contactamos en 24-48hs para coordinar la entrega.'
+    : 'Tu pago está en proceso. Cuando se acredite te avisamos y preparamos tu pedido.';
+  document.getElementById('ordNumberBadge').textContent = data.order_number;
+  document.getElementById('ordConfirm').classList.add('visible');
 }
 
 /* ── PEDIDO MANUAL (transferencia / efectivo / WhatsApp) ── */
@@ -3337,6 +3874,11 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('input[name="metodoPago"]').forEach(function(r){
     r.addEventListener('change', actualizarMetodoPago);
   });
+  // MP checkout modal – el HTML viene después del script, usar DOMContentLoaded
+  var mpcoClose = document.getElementById('mpcoClose');
+  var mpcoBackdrop = document.getElementById('mpcoBackdrop');
+  if (mpcoClose) mpcoClose.addEventListener('click', closeMPCheckout);
+  if (mpcoBackdrop) mpcoBackdrop.addEventListener('click', closeMPCheckout);
 });
 // ═══════════════════════════════════════════════════
 
@@ -3623,6 +4165,151 @@ buildSubnav();
 
 <!-- TOAST -->
 <div class="toast-cart" id="toastCart"></div>
+
+<!-- CONFIG VISUAL LOADER (lee /api/config-visual y aplica al DOM) -->
+<script>
+(function() {
+  fetch('/api/config-visual')
+    .then(function(r) { return r.ok ? r.json() : {}; })
+    .catch(function() { return {}; })
+    .then(function(cfg) {
+      // Hero
+      if (cfg.hero_badge) {
+        var el = document.getElementById('cfg-hero-badge');
+        if (el) el.textContent = cfg.hero_badge;
+      }
+      if (cfg.hero_sub1) {
+        var el = document.getElementById('cfg-hero-sub1');
+        if (el) el.textContent = cfg.hero_sub1;
+      }
+      if (cfg.hero_sub2) {
+        var el = document.getElementById('cfg-hero-sub2');
+        if (el) el.textContent = cfg.hero_sub2;
+      }
+      if (cfg.hero_desc) {
+        var el = document.getElementById('cfg-hero-desc');
+        if (el) el.textContent = cfg.hero_desc;
+      }
+
+      // Barra de anuncio
+      if (cfg.announce_enabled === 'true' && cfg.announce_text) {
+        var bar = document.getElementById('lm-announce-bar');
+        var txt = document.getElementById('lm-announce-text');
+        if (bar && txt) { txt.textContent = cfg.announce_text; bar.style.display = 'block'; }
+        // Agregar padding al body para compensar la barra
+        document.body.style.paddingTop = (parseInt(getComputedStyle(document.body).paddingTop) + 38) + 'px';
+      }
+
+      // WhatsApp — actualizar todos los links wa.me
+      if (cfg.wa_number) {
+        var waUrl = 'https://wa.me/' + cfg.wa_number.replace(/\D/g,'');
+        document.querySelectorAll('a[href*="wa.me"]').forEach(function(a) {
+          var url = new URL(a.href);
+          var text = url.searchParams.get('text');
+          a.href = waUrl + (text ? '?text=' + encodeURIComponent(text) : '');
+        });
+      }
+
+      // Aviso especial
+      if (cfg.aviso_web && cfg.aviso_web.trim()) {
+        var wrap = document.getElementById('lm-aviso-wrap');
+        var txt  = document.getElementById('lm-aviso-text');
+        if (wrap && txt) { txt.textContent = cfg.aviso_web; wrap.style.display = 'block'; }
+      }
+    });
+})();
+</script>
+
+<!-- ── MP CHECKOUT MODAL ── -->
+<div class="mpco-backdrop" id="mpcoBackdrop"></div>
+<div class="mpco-modal" id="mpcoModal" role="dialog" aria-modal="true">
+  <div class="mpco-head">
+    <h3>Pagar con MercadoPago</h3>
+    <button class="mpco-close" id="mpcoClose" aria-label="Cerrar">×</button>
+  </div>
+  <div class="co-steps" id="coStepsBar">
+    <div class="co-step active" id="coStepDot1"><span>1</span> Dirección</div>
+    <div class="co-step-sep"></div>
+    <div class="co-step" id="coStepDot2"><span>2</span> Resumen</div>
+    <div class="co-step-sep"></div>
+    <div class="co-step" id="coStepDot3"><span>3</span> Pago</div>
+  </div>
+  <div class="mpco-body">
+    <!-- Step 1 -->
+    <div id="coStep1" class="co-panel">
+      <div style="max-width:440px;margin:0 auto">
+        <div class="cf-row2">
+          <div class="cf-field"><label>Nombre completo</label><input class="cf-inp" id="cfName" type="text" placeholder="Tu nombre" autocomplete="name"></div>
+          <div class="cf-field"><label>Email</label><input class="cf-inp" id="cfEmail" type="email" placeholder="tu@email.com" autocomplete="email"></div>
+        </div>
+        <div class="cf-field"><label>Teléfono</label><input class="cf-inp" id="cfPhone" type="tel" placeholder="+54 11 1234-5678" autocomplete="tel"></div>
+        <div class="cf-field"><label>Dirección</label><input class="cf-inp" id="cfStreet" type="text" placeholder="Calle 123, Piso 4" autocomplete="street-address"></div>
+        <div class="cf-row2">
+          <div class="cf-field"><label>Ciudad</label><input class="cf-inp" id="cfCity" type="text" placeholder="Buenos Aires" autocomplete="address-level2"></div>
+          <div class="cf-field"><label>Código postal</label><input class="cf-inp" id="cfZip" type="text" placeholder="1425" autocomplete="postal-code"></div>
+        </div>
+        <div class="cf-field">
+          <label>Provincia</label>
+          <select class="cf-sel" id="cfProvince">
+            <option value="">Seleccioná tu provincia</option>
+            <option>Buenos Aires</option><option>CABA</option><option>Córdoba</option>
+            <option>Santa Fe</option><option>Mendoza</option><option>Tucumán</option>
+            <option>Entre Ríos</option><option>Salta</option><option>Misiones</option>
+            <option>Chaco</option><option>Corrientes</option><option>Santiago del Estero</option>
+            <option>San Juan</option><option>Jujuy</option><option>Río Negro</option>
+            <option>Neuquén</option><option>Formosa</option><option>Chubut</option>
+            <option>San Luis</option><option>Catamarca</option><option>La Rioja</option>
+            <option>La Pampa</option><option>Santa Cruz</option><option>Tierra del Fuego</option>
+          </select>
+        </div>
+        <div class="cf-field"><label>Notas (opcional)</label><input class="cf-inp" id="cfNotes" type="text" placeholder="Instrucciones especiales..."></div>
+      </div>
+    </div>
+    <!-- Step 2 -->
+    <div id="coStep2" class="co-panel" style="display:none">
+      <div class="co-grid">
+        <div>
+          <div style="font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;margin-bottom:14px">Tu pedido</div>
+          <div class="co-items-list" id="coItemsList"></div>
+          <div class="co-totals">
+            <div class="co-tr"><span>Subtotal</span><span id="coSubtotal">—</span></div>
+            <div class="co-tr savings" id="coDiscountRow" style="display:none"><span id="coDiscountLabel">Descuento</span><span id="coDiscountAmt">—</span></div>
+            <div class="co-tr"><span>Envío</span><span id="coShipping">—</span></div>
+            <div class="co-tr main"><span>Total</span><span id="coTotal">—</span></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:700;margin-bottom:14px">Código de descuento</div>
+          <div class="cf-disc-row" style="margin-bottom:4px">
+            <input class="cf-inp" id="cfDiscountCode" placeholder="CODIGO20">
+            <button class="cf-apply" id="cfApplyDiscount">Aplicar</button>
+          </div>
+          <div class="cf-msg" id="cfDiscountMsg"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div id="coStep3" class="co-panel" style="display:none">
+      <div class="co-mini-total"><span>Total a pagar</span><strong id="coMiniTotal">—</strong></div>
+      <div id="cardPaymentBrick_container"></div>
+      <div class="co-pay-err" id="coPayErr"></div>
+      <div class="co-security-strip">🔒 Pago seguro · Procesado por MercadoPago · SSL 256-bit</div>
+    </div>
+    <!-- Confirmación -->
+    <div class="ord-confirm" id="ordConfirm">
+      <div style="font-size:48px;margin-bottom:16px">✅</div>
+      <h3 id="ordConfirmTitle">¡Pago confirmado!</h3>
+      <div class="ord-number-badge" id="ordNumberBadge">—</div>
+      <p id="ordConfirmMsg">Tu pedido fue procesado. Te contactamos en 24-48hs para coordinar la entrega.</p>
+    </div>
+  </div>
+  <div class="mpco-foot" id="mpcoFoot">
+    <div class="co-foot-btns">
+      <button class="co-back-btn" id="coBackBtn" style="display:none">← Volver</button>
+      <button class="mpco-confirm-btn" id="mpcoConfirmBtn">Continuar →</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

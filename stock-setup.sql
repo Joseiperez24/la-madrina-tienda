@@ -21,6 +21,35 @@ ALTER TABLE stock ENABLE ROW LEVEL SECURITY;
 -- Sin políticas = nadie accede directo; el backend usa la service key que bypassea RLS
 
 
+-- ══════════════════════════════════════════════════════════
+--  Tabla CONFIG — pares clave/valor editables desde el admin
+-- ══════════════════════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS config (
+  key        TEXT        PRIMARY KEY,
+  value      TEXT        NOT NULL DEFAULT '',
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE config ENABLE ROW LEVEL SECURITY;
+-- Sin políticas = acceso solo por service key (backend)
+
+-- Valores por defecto
+INSERT INTO config (key, value) VALUES
+  ('hero_badge',          '✦ Forrajería de La Soñada ✦'),
+  ('hero_sub1',           'Nutrición y cuidado animal'),
+  ('hero_sub2',           'Básicos para huerta'),
+  ('hero_desc',           'Entrega en San Francisco y zona, o retiro en depósito. Atención personalizada con la calidad del campo.'),
+  ('announce_enabled',    'false'),
+  ('announce_text',       ''),
+  ('wa_number',           '5493564679338'),
+  ('direccion_deposito',  'La Madrid 3049, San Francisco, Córdoba'),
+  ('horario_semana',      '8:00 a 18:00'),
+  ('horario_sabado',      '8:00 a 13:00'),
+  ('horario_domingo',     'Cerrado'),
+  ('aviso_web',           '')
+ON CONFLICT (key) DO NOTHING;
+
+
 -- ── Carga inicial con todos los productos ──────────────────
 -- Mascotas — Cooperación
 INSERT INTO stock (id, nombre, stock, disponible) VALUES

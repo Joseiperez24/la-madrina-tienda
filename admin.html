@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — La Madrina Forrajería</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Lora:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gd: #1a4a1a;       /* green dark */
+  --gm: #2d6a2d;       /* green mid */
+  --gold: #c8862a;
+  --gold-bg: rgba(200,134,42,.1);
+  --cream: #f8f4ec;
+  --line: #e2ddd0;
+  --red: #8b1a1a;
+  --red-bg: rgba(139,26,26,.08);
+  --amber: #7a4800;
+  --amber-bg: rgba(200,120,0,.1);
+  --sidebar-w: 230px;
+  --header-h: 58px;
+  --shadow: 0 1px 4px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 18px rgba(0,0,0,.11);
+  --r: 10px;
+}
+body { font-family: 'Inter', sans-serif; font-size: 14px; background: var(--cream); color: var(--gd); min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
+input, textarea, select { font-family: inherit; font-size: 14px; }
+
+/* ── LOGIN ──────────────────────────────────────────── */
+#loginScreen {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0e2a0e 0%, #1a4a1a 60%, #0e2a0e 100%);
+}
+.login-card {
+  background: var(--cream); border-radius: 18px;
+  padding: 2.75rem 2.5rem; width: 100%; max-width: 400px;
+  box-shadow: 0 24px 64px rgba(0,0,0,.35);
+}
+.login-logo {
+  font-family: 'Cormorant Garamond', serif; font-size: 2.2rem;
+  font-weight: 600; text-align: center; color: var(--gd);
+  letter-spacing: .04em; margin-bottom: .2rem;
+}
+.login-logo em { font-style: italic; color: var(--gold); }
+.login-sub {
+  text-align: center; font-family: 'Lora', serif; font-size: .8rem;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--gold);
+  margin-bottom: 2.2rem;
+}
+.login-divider { width: 40px; height: 2px; background: var(--gold); margin: .9rem auto 1.8rem; }
+.login-label {
+  display: block; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; color: #555; margin-bottom: .4rem;
+}
+.login-input {
+  width: 100%; padding: .75rem 1rem; border: 1.5px solid var(--line);
+  border-radius: 8px; outline: none; transition: border .2s; background: white;
+  font-size: 15px;
+}
+.login-input:focus { border-color: var(--gm); }
+.login-field { margin-bottom: 1.3rem; }
+.login-btn {
+  width: 100%; padding: .85rem; background: var(--gd); color: var(--cream);
+  border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: background .2s; margin-top: .4rem;
+  letter-spacing: .02em;
+}
+.login-btn:hover { background: var(--gm); }
+.login-btn:disabled { opacity: .5; cursor: default; }
+.login-err { color: var(--red); font-size: 12px; margin-top: .8rem; text-align: center; min-height: 18px; }
+
+/* ── SHELL ──────────────────────────────────────────── */
+#adminShell { display: flex; min-height: 100vh; }
+
+/* sidebar */
+.sidebar {
+  width: var(--sidebar-w); background: var(--gd); color: #fff;
+  display: flex; flex-direction: column; flex-shrink: 0;
+  position: fixed; top: 0; left: 0; height: 100vh; z-index: 100;
+  overflow-y: auto;
+}
+.sidebar-logo {
+  padding: 1.6rem 1.4rem 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.sidebar-logo-name {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.45rem;
+  font-weight: 600; color: #fff; letter-spacing: .03em; line-height: 1.1;
+}
+.sidebar-logo-name em { color: var(--gold); font-style: italic; }
+.sidebar-logo-sub {
+  font-family: 'Lora', serif; font-size: .65rem; letter-spacing: .18em;
+  text-transform: uppercase; color: rgba(255,255,255,.45); margin-top: .35rem;
+  display: block;
+}
+.sidebar-nav { flex: 1; padding: .6rem 0; }
+.nav-group-label {
+  font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+  color: rgba(255,255,255,.3); padding: 1.1rem 1.4rem .4rem; font-weight: 600;
+}
+.nav-item {
+  display: flex; align-items: center; gap: .65rem; width: 100%;
+  padding: .62rem 1.4rem; background: none; border: none;
+  color: rgba(255,255,255,.6); font-size: 13px; font-family: inherit;
+  cursor: pointer; transition: all .15s; text-align: left;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover { color: #fff; background: rgba(255,255,255,.07); }
+.nav-item.active { color: #fff; background: rgba(255,255,255,.1); border-left-color: var(--gold); font-weight: 500; }
+.nav-item svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; stroke-linecap: round; stroke-linejoin: round; }
+.sidebar-footer {
+  padding: 1rem 1.4rem; border-top: 1px solid rgba(255,255,255,.1);
+  display: flex; flex-direction: column; gap: .5rem;
+}
+.sidebar-footer a, .logout-btn {
+  background: none; border: none; color: rgba(255,255,255,.4); font-size: 12px;
+  cursor: pointer; font-family: inherit; padding: .3rem 0;
+  display: flex; align-items: center; gap: .5rem; transition: color .15s;
+  text-decoration: none;
+}
+.sidebar-footer a:hover, .logout-btn:hover { color: #fff; }
+
+/* main area */
+.admin-main { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+.admin-header {
+  height: var(--header-h); background: white; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; padding: 0 1.75rem;
+  position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow); gap: 1rem;
+}
+.admin-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 600; color: var(--gd); }
+.admin-header-sep { flex: 1; }
+.user-badge {
+  font-size: 12px; color: #888; background: rgba(26,74,26,.07);
+  padding: .3rem .85rem; border-radius: 20px; border: 1px solid rgba(26,74,26,.15);
+}
+.admin-content { padding: 1.75rem; flex: 1; }
+
+/* ── SECTIONS ───────────────────────────────────────── */
+.section { display: none; }
+.section.active { display: block; }
+.section-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--gd); margin-bottom: 1.5rem; }
+
+/* ── KPI CARDS ──────────────────────────────────────── */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.kpi-card { background: white; border-radius: var(--r); padding: 1.3rem 1.4rem; box-shadow: var(--shadow); border-top: 3px solid var(--line); position: relative; overflow: hidden; }
+.kpi-card.green { border-top-color: var(--gm); }
+.kpi-card.gold  { border-top-color: var(--gold); }
+.kpi-card.red   { border-top-color: var(--red); }
+.kpi-card.ink   { border-top-color: var(--gd); }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #999; margin-bottom: .5rem; }
+.kpi-value { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 600; color: var(--gd); line-height: 1; }
+.kpi-sub { font-size: 11px; color: #aaa; margin-top: .4rem; }
+
+/* ── TABLE CARD ─────────────────────────────────────── */
+.table-card { background: white; border-radius: var(--r); box-shadow: var(--shadow); overflow: hidden; }
+.table-toolbar {
+  display: flex; align-items: center; gap: .75rem;
+  padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); flex-wrap: wrap;
+}
+.table-toolbar h2 { font-size: 14px; font-weight: 600; color: var(--gd); flex: 1; min-width: 120px; }
+.admin-table { width: 100%; border-collapse: collapse; }
+.admin-table th {
+  background: #f5f2ea; font-weight: 600; font-size: 11px; letter-spacing: .05em;
+  color: #777; padding: .7rem 1rem; text-align: left; border-bottom: 1px solid var(--line);
+  text-transform: uppercase;
+}
+.admin-table td { padding: .72rem 1rem; border-bottom: 1px solid #f0ece8; vertical-align: middle; }
+.admin-table tr:last-child td { border-bottom: none; }
+.admin-table tr:hover td { background: #faf8f2; }
+.admin-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.table-scroll { overflow-x: auto; }
+
+/* ── BADGES ─────────────────────────────────────────── */
+.badge { display: inline-flex; align-items: center; padding: .2rem .65rem; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: .03em; }
+.badge-ok    { background: rgba(45,106,45,.1); color: var(--gm); }
+.badge-off   { background: rgba(139,26,26,.08); color: var(--red); }
+.badge-prox  { background: rgba(200,134,42,.12); color: #7a4800; }
+
+.cat-badge {
+  display: inline-block; font-size: 10px; font-family: 'Lora', serif;
+  letter-spacing: .1em; text-transform: uppercase; padding: 2px 8px;
+  border-radius: 4px; background: rgba(26,74,26,.07); color: var(--gm);
+}
+
+/* ── INPUTS / CONTROLS ──────────────────────────────── */
+.filter-row {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .75rem 1.25rem; background: #faf8f2; border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.filter-input {
+  padding: .42rem .75rem; border: 1.5px solid var(--line); border-radius: 7px;
+  outline: none; background: white; transition: border .2s;
+}
+.filter-input:focus { border-color: var(--gm); }
+.filter-label { font-size: 12px; color: #888; font-weight: 500; white-space: nowrap; }
+
+.stock-input {
+  width: 72px; padding: .32rem .5rem; border: 1.5px solid var(--line);
+  border-radius: 6px; font-size: 13px; text-align: center; outline: none;
+  transition: border .2s;
+}
+.stock-input:focus { border-color: var(--gm); }
+
+/* Toggle switch */
+.toggle-wrap { display: flex; align-items: center; gap: .5rem; }
+.toggle { position: relative; width: 38px; height: 22px; display: inline-block; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0; background: #ddd; border-radius: 22px; cursor: pointer;
+  transition: background .25s;
+}
+.toggle-slider::after {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 16px; height: 16px; background: white; border-radius: 50%;
+  transition: transform .25s; box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.toggle input:checked + .toggle-slider { background: var(--gm); }
+.toggle input:checked + .toggle-slider::after { transform: translateX(16px); }
+.toggle-label { font-size: 12px; color: #777; }
+
+/* Save feedback */
+.save-feedback { font-size: 11px; color: var(--gm); margin-left: .4rem; opacity: 0; transition: opacity .3s; white-space: nowrap; }
+.save-feedback.show { opacity: 1; }
+.save-err { color: var(--red); }
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: .4rem; padding: .48rem .9rem;
+  border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer;
+  border: none; font-family: inherit; transition: all .15s; white-space: nowrap;
+}
+.btn-primary { background: var(--gd); color: white; }
+.btn-primary:hover { background: var(--gm); }
+.btn-gold { background: var(--gold); color: white; }
+.btn-gold:hover { background: #b07020; }
+.btn-outline { background: white; color: var(--gd); border: 1.5px solid var(--line); }
+.btn-outline:hover { border-color: #aaa; }
+.btn-sm { padding: .3rem .65rem; font-size: 12px; }
+.btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.btn:disabled { opacity: .4; cursor: default; }
+
+/* ── CONFIG FORM (Info Visual) ──────────────────────── */
+.config-section { margin-bottom: 2rem; }
+.config-section-title {
+  font-family: 'Lora', serif; font-size: .72rem; font-weight: 600;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--gold);
+  padding-bottom: .6rem; border-bottom: 1px solid var(--line);
+  margin-bottom: 1.2rem;
+}
+.config-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+.config-field label {
+  display: block; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; color: #777; margin-bottom: .4rem;
+}
+.config-field small { display: block; font-size: 11px; color: #aaa; margin-top: .25rem; line-height: 1.4; }
+.config-input {
+  width: 100%; padding: .65rem .9rem; border: 1.5px solid var(--line);
+  border-radius: 8px; outline: none; transition: border .2s; background: white;
+}
+.config-input:focus { border-color: var(--gm); }
+textarea.config-input { resize: vertical; min-height: 76px; font-size: 13.5px; line-height: 1.55; }
+.config-field.full { grid-column: 1 / -1; }
+
+.config-save-bar {
+  position: sticky; bottom: 0; background: white; border-top: 1px solid var(--line);
+  padding: 1rem 1.75rem; display: flex; align-items: center; gap: 1rem;
+  margin: 0 -1.75rem -1.75rem; box-shadow: 0 -4px 16px rgba(0,0,0,.06);
+  z-index: 10;
+}
+.config-save-msg { font-size: 13px; color: var(--gm); opacity: 0; transition: opacity .3s; }
+.config-save-msg.show { opacity: 1; }
+
+/* ── ANNOUNCE PREVIEW ───────────────────────────────── */
+.announce-preview {
+  background: var(--gd); color: var(--cream); text-align: center;
+  padding: 9px 20px; font-size: 12px; letter-spacing: .16em;
+  text-transform: uppercase; border-radius: 7px; margin-top: .75rem;
+  display: none;
+}
+.announce-preview.show { display: block; }
+.announce-preview strong { color: var(--gold); }
+
+/* ── SPINNER ─────────────────────────────────────────── */
+.spinner { display: inline-block; width: 18px; height: 18px; border: 2.5px solid rgba(26,74,26,.2); border-top-color: var(--gm); border-radius: 50%; animation: spin .65s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-row td { text-align: center; padding: 2.5rem; color: #bbb; }
+
+/* ── TOAST ───────────────────────────────────────────── */
+#toast {
+  position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(12px);
+  background: var(--gd); color: var(--cream); padding: .75rem 1.5rem;
+  border-radius: 8px; font-size: 13px; font-weight: 500; opacity: 0;
+  transition: all .3s; z-index: 9999; pointer-events: none; white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.error { background: var(--red); }
+
+/* ── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); transition: transform .3s; }
+  .sidebar.open { transform: translateX(0); }
+  .admin-main { margin-left: 0; }
+  .admin-header { padding: 0 1rem; }
+  .admin-content { padding: 1rem; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .menu-toggle { display: flex !important; }
+  .config-save-bar { margin: 0 -1rem -1rem; padding: .85rem 1rem; }
+}
+.menu-toggle {
+  display: none; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border: none; background: transparent;
+  cursor: pointer; color: var(--gd); flex-shrink: 0;
+}
+.menu-toggle svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<!-- ── TOAST ── -->
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">La <em>Madrina</em></div>
+    <div class="login-sub">Panel de administración</div>
+    <div class="login-divider"></div>
+    <div class="login-field">
+      <label class="login-label" for="loginPass">Contraseña</label>
+      <input class="login-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Ingresar</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     ADMIN SHELL
+════════════════════════════════════════════════════ -->
+<div id="adminShell" style="display:none">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-name">La <em>Madrina</em></div>
+      <span class="sidebar-logo-sub">Forrajería · Admin</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Principal</div>
+      <button class="nav-item active" onclick="showSection('dashboard', this)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" onclick="showSection('stock', this)">
+        <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Stock
+      </button>
+      <button class="nav-item" onclick="showSection('visual', this)">
+        <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Info visual
+      </button>
+      <button class="nav-item" onclick="showSection('orders', this)">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        Órdenes
+      </button>
+      <div class="nav-group-label" style="margin-top:.6rem">Accesos</div>
+      <a class="nav-item" href="/" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Ver sitio web
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()">
+        <svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+    <header class="admin-header">
+      <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <h1 id="headerTitle">Dashboard</h1>
+      <div class="admin-header-sep"></div>
+      <span class="user-badge">Admin</span>
+    </header>
+
+    <div class="admin-content">
+
+      <!-- ══ DASHBOARD ══════════════════════════════════ -->
+      <section id="secDashboard" class="section active">
+        <div class="section-title">Resumen general</div>
+        <div class="kpi-grid" id="kpiGrid">
+          <div class="kpi-card ink">
+            <div class="kpi-label">Total productos</div>
+            <div class="kpi-value" id="kpiTotal">—</div>
+            <div class="kpi-sub">en Supabase</div>
+          </div>
+          <div class="kpi-card green">
+            <div class="kpi-label">Disponibles</div>
+            <div class="kpi-value" id="kpiOk">—</div>
+            <div class="kpi-sub">disponible = true</div>
+          </div>
+          <div class="kpi-card red">
+            <div class="kpi-label">Sin stock</div>
+            <div class="kpi-value" id="kpiOff">—</div>
+            <div class="kpi-sub">stock = 0 o desactivados</div>
+          </div>
+          <div class="kpi-card gold">
+            <div class="kpi-label">Próximamente</div>
+            <div class="kpi-value" id="kpiProx">—</div>
+            <div class="kpi-sub">disponible = false</div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-toolbar">
+            <h2>Productos con stock bajo o sin stock</h2>
+            <button class="btn btn-outline btn-sm" onclick="showSection('stock', document.querySelector('.nav-item[onclick*=stock]'))">
+              Ver todos
+              <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+          <div class="table-scroll">
+            <table class="admin-table" id="alertTable">
+              <thead><tr><th>Producto</th><th>Categoría</th><th>Stock</th><th>Estado</th></tr></thead>
+              <tbody id="alertBody"><tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══ STOCK ══════════════════════════════════════ -->
+      <section id="secStock" class="section">
+        <div class="section-title">Gestión de stock</div>
+        <div class="table-card">
+          <div class="table-toolbar">
+            <h2>Todos los productos</h2>
+            <input class="filter-input" id="stockSearch" type="search" placeholder="Buscar producto..." oninput="filterStock()">
+            <select class="filter-input" id="stockFilterCat" onchange="filterStock()">
+              <option value="">Todas las categorías</option>
+              <option value="cooperacion">Cooperación</option>
+              <option value="petlink">PetLink</option>
+              <option value="valor">Valor</option>
+              <option value="campo">Campo / Vitosan</option>
+              <option value="forrajes">Forrajes</option>
+              <option value="camas">Camas</option>
+              <option value="talabarteria">Talabartería</option>
+            </select>
+            <select class="filter-input" id="stockFilterDisp" onchange="filterStock()">
+              <option value="">Todos los estados</option>
+              <option value="ok">Disponibles</option>
+              <option value="off">Sin stock / desactivados</option>
+            </select>
+          </div>
+          <div class="table-scroll">
+            <table class="admin-table" id="stockTable">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Categoría</th>
+                  <th style="width:110px;text-align:center">Stock (unidades)</th>
+                  <th style="width:130px;text-align:center">Disponible</th>
+                  <th style="width:90px">Guardar</th>
+                </tr>
+              </thead>
+              <tbody id="stockBody">
+                <tr class="loading-row"><td colspan="5"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p style="font-size:12px;color:#aaa;margin-top:.8rem;padding-left:.2rem">
+          Stock <strong>-1</strong> = ilimitado (siempre disponible) · <strong>0</strong> = sin stock · cualquier número positivo = unidades disponibles
+        </p>
+      </section>
+
+      <!-- ══ INFO VISUAL ════════════════════════════════ -->
+      <section id="secVisual" class="section">
+        <div class="section-title">Información visual del sitio</div>
+
+        <!-- Hero -->
+        <div class="config-section">
+          <div class="config-section-title">Hero / Portada</div>
+          <div class="config-grid">
+            <div class="config-field">
+              <label>Badge de la portada</label>
+              <input class="config-input" id="cfg_hero_badge" type="text" placeholder="✦ Forrajería de La Soñada ✦">
+              <small>Texto del chip decorativo en la imagen principal</small>
+            </div>
+            <div class="config-field">
+              <label>Subtítulo línea 1</label>
+              <input class="config-input" id="cfg_hero_sub1" type="text" placeholder="Nutrición y cuidado animal">
+            </div>
+            <div class="config-field">
+              <label>Subtítulo línea 2</label>
+              <input class="config-input" id="cfg_hero_sub2" type="text" placeholder="Básicos para huerta">
+            </div>
+            <div class="config-field full">
+              <label>Descripción de la portada</label>
+              <textarea class="config-input" id="cfg_hero_desc" placeholder="Entrega en San Francisco y zona, o retiro en depósito. Atención personalizada con la calidad del campo."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Anuncio -->
+        <div class="config-section">
+          <div class="config-section-title">Barra de anuncio (opcional)</div>
+          <div class="config-grid">
+            <div class="config-field">
+              <label>Activar barra de anuncio</label>
+              <div class="toggle-wrap" style="margin-top:.3rem">
+                <label class="toggle">
+                  <input type="checkbox" id="cfg_announce_enabled" onchange="previewAnnounce()">
+                  <span class="toggle-slider"></span>
+                </label>
+                <span class="toggle-label">Mostrar barra en la web</span>
+              </div>
+            </div>
+            <div class="config-field">
+              <label>Texto del anuncio</label>
+              <input class="config-input" id="cfg_announce_text" type="text" placeholder="Ej: Nueva temporada de alfalfa disponible 🌿" oninput="previewAnnounce()">
+              <small>Aparece en una franja verde en la parte superior del sitio</small>
+            </div>
+          </div>
+          <div class="announce-preview" id="announcePreview"></div>
+        </div>
+
+        <!-- Contacto -->
+        <div class="config-section">
+          <div class="config-section-title">Contacto y ubicación</div>
+          <div class="config-grid">
+            <div class="config-field">
+              <label>Número de WhatsApp</label>
+              <input class="config-input" id="cfg_wa_number" type="text" placeholder="5493564679338">
+              <small>Solo dígitos, sin espacios ni guiones. Ej: 5493564679338</small>
+            </div>
+            <div class="config-field">
+              <label>Dirección del depósito principal</label>
+              <input class="config-input" id="cfg_direccion_deposito" type="text" placeholder="La Madrid 3049, San Francisco">
+            </div>
+          </div>
+        </div>
+
+        <!-- Horarios -->
+        <div class="config-section">
+          <div class="config-section-title">Horarios de atención</div>
+          <div class="config-grid">
+            <div class="config-field">
+              <label>Lunes a Viernes</label>
+              <input class="config-input" id="cfg_horario_semana" type="text" placeholder="8:00 a 18:00">
+            </div>
+            <div class="config-field">
+              <label>Sábados</label>
+              <input class="config-input" id="cfg_horario_sabado" type="text" placeholder="8:00 a 13:00">
+            </div>
+            <div class="config-field">
+              <label>Domingos / feriados</label>
+              <input class="config-input" id="cfg_horario_domingo" type="text" placeholder="Cerrado">
+            </div>
+          </div>
+        </div>
+
+        <!-- Aviso extra -->
+        <div class="config-section">
+          <div class="config-section-title">Aviso especial en la web</div>
+          <div class="config-grid">
+            <div class="config-field full">
+              <label>Aviso (opcional)</label>
+              <textarea class="config-input" id="cfg_aviso_web" placeholder="Ej: Por falta de stock temporario, no tenemos viruta hasta el 15 de junio."></textarea>
+              <small>Si lo completás aparece una tarjeta de aviso visible en el sitio. Dejalo vacío para que no aparezca.</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save bar -->
+        <div class="config-save-bar">
+          <button class="btn btn-primary" id="saveConfigBtn" onclick="saveConfig()">
+            <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Guardar cambios
+          </button>
+          <div class="config-save-msg" id="configSaveMsg">✓ Cambios guardados correctamente</div>
+        </div>
+      </section>
+
+      <!-- ══ ÓRDENES ═══════════════════════════════════ -->
+      <section id="secOrders" class="section">
+        <div class="section-title">Órdenes</div>
+        <!-- Filtros -->
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;align-items:flex-end">
+          <div>
+            <label style="display:block;font-size:11px;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Desde</label>
+            <input type="date" id="ordFilterFrom" style="padding:8px 11px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+          </div>
+          <div>
+            <label style="display:block;font-size:11px;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Hasta</label>
+            <input type="date" id="ordFilterTo" style="padding:8px 11px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:13px;outline:none">
+          </div>
+          <div>
+            <label style="display:block;font-size:11px;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Provincia</label>
+            <select id="ordFilterProv" style="padding:8px 11px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:13px;outline:none;background:#fff">
+              <option value="">Todas</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block;font-size:11px;font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Estado</label>
+            <select id="ordFilterStatus" style="padding:8px 11px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:13px;outline:none;background:#fff">
+              <option value="">Todos</option>
+              <option value="pending">Pendiente</option>
+              <option value="paid">Pagado</option>
+              <option value="shipped">Enviado</option>
+              <option value="delivered">Entregado</option>
+              <option value="cancelled">Cancelado</option>
+            </select>
+          </div>
+          <button onclick="loadOrders()" class="btn btn-primary" style="padding:9px 18px">Filtrar</button>
+          <span id="ordCount" style="font-size:12px;color:#888;align-self:center"></span>
+        </div>
+        <!-- Tabla -->
+        <div class="table-card">
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+              <tr style="background:#f8f9fa">
+                <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:#666;border-bottom:1px solid var(--line)"># Orden</th>
+                <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:#666;border-bottom:1px solid var(--line)">Fecha</th>
+                <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:#666;border-bottom:1px solid var(--line)">Cliente</th>
+                <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:#666;border-bottom:1px solid var(--line)">Provincia</th>
+                <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:#666;border-bottom:1px solid var(--line)">Estado</th>
+                <th style="padding:10px 12px;text-align:right;font-size:11px;font-weight:600;color:#666;border-bottom:1px solid var(--line)">Total</th>
+                <th style="padding:10px 12px;border-bottom:1px solid var(--line)"></th>
+              </tr>
+            </thead>
+            <tbody id="ordBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div><!-- /admin-content -->
+  </main>
+</div><!-- /adminShell -->
+
+<script>
+// ════════════════════════════════════════════════════════
+//  Estado global
+// ════════════════════════════════════════════════════════
+let TOKEN = sessionStorage.getItem('lm_admin_token') || '';
+let stockData = [];
+
+// ── Toast ─────────────────────────────────────────────
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (isError ? ' error' : '');
+  setTimeout(() => { t.className = ''; }, 3200);
+}
+
+// ── Auth ──────────────────────────────────────────────
+async function doLogin() {
+  const pass = document.getElementById('loginPass').value.trim();
+  const btn  = document.getElementById('loginBtn');
+  const err  = document.getElementById('loginErr');
+  if (!pass) { err.textContent = 'Ingresá la contraseña.'; return; }
+  btn.disabled = true;
+  btn.textContent = 'Verificando...';
+  err.textContent = '';
+  try {
+    const r = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pass }),
+    });
+    const data = await r.json();
+    if (!r.ok) { err.textContent = data.error || 'Error al iniciar sesión.'; return; }
+    TOKEN = data.token;
+    sessionStorage.setItem('lm_admin_token', TOKEN);
+    initAdmin();
+  } catch {
+    err.textContent = 'Error de red. Intentá de nuevo.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Ingresar';
+  }
+}
+
+document.getElementById('loginPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+function doLogout() {
+  TOKEN = '';
+  sessionStorage.removeItem('lm_admin_token');
+  document.getElementById('adminShell').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginErr').textContent = '';
+}
+
+// ── Navigation ────────────────────────────────────────
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('active');
+  if (btn) btn.classList.add('active');
+  const titles = { dashboard: 'Dashboard', stock: 'Stock', visual: 'Info visual', orders: 'Órdenes' };
+  document.getElementById('headerTitle').textContent = titles[id] || id;
+  if (id === 'stock') loadStock();
+  if (id === 'visual') loadConfig();
+  if (id === 'orders') loadOrders();
+  // close mobile sidebar
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+// ── INIT ──────────────────────────────────────────────
+function initAdmin() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminShell').style.display = 'flex';
+  loadDashboard();
+}
+
+// ── API helper ────────────────────────────────────────
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN, ...(opts.headers || {}) };
+  const r = await fetch(path, { ...opts, headers });
+  if (r.status === 401) { doLogout(); throw new Error('Sesión expirada'); }
+  return r;
+}
+
+// ════════════════════════════════════════════════════════
+//  DASHBOARD
+// ════════════════════════════════════════════════════════
+async function loadDashboard() {
+  try {
+    const r = await api('/api/admin/stock');
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    stockData = data;
+    const total = data.length;
+    const ok    = data.filter(p => p.disponible).length;
+    const off   = data.filter(p => !p.disponible || p.stock === 0).length;
+    const prox  = data.filter(p => !p.disponible).length;
+    document.getElementById('kpiTotal').textContent = total;
+    document.getElementById('kpiOk').textContent    = ok;
+    document.getElementById('kpiOff').textContent   = off;
+    document.getElementById('kpiProx').textContent  = prox;
+
+    // alert table: sin stock o desactivados
+    const alerts = data.filter(p => !p.disponible || p.stock === 0);
+    const body = document.getElementById('alertBody');
+    if (alerts.length === 0) {
+      body.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:#bbb;font-style:italic">Todos los productos tienen stock ✓</td></tr>';
+    } else {
+      body.innerHTML = alerts.map(p => `
+        <tr>
+          <td>${escH(p.nombre)}</td>
+          <td><span class="cat-badge">${catLabel(p.id)}</span></td>
+          <td class="num">${p.stock === -1 ? '∞' : p.stock}</td>
+          <td>${p.disponible
+            ? '<span class="badge badge-prox">Stock 0</span>'
+            : '<span class="badge badge-off">Desactivado</span>'}</td>
+        </tr>`).join('');
+    }
+  } catch(e) {
+    showToast('Error cargando datos: ' + e.message, true);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  STOCK TABLE
+// ════════════════════════════════════════════════════════
+async function loadStock() {
+  if (stockData.length > 0) { renderStock(stockData); return; }
+  try {
+    const r = await api('/api/admin/stock');
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    stockData = data;
+    renderStock(data);
+  } catch(e) {
+    document.getElementById('stockBody').innerHTML =
+      `<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--red)">${escH(e.message)}</td></tr>`;
+  }
+}
+
+function renderStock(data) {
+  const body = document.getElementById('stockBody');
+  if (data.length === 0) {
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#bbb;font-style:italic">Sin productos</td></tr>';
+    return;
+  }
+  body.innerHTML = data.map(p => `
+    <tr id="row_${escH(p.id)}">
+      <td style="max-width:240px;line-height:1.35">${escH(p.nombre)}</td>
+      <td><span class="cat-badge">${catLabel(p.id)}</span></td>
+      <td style="text-align:center">
+        <input class="stock-input" id="si_${escH(p.id)}" type="number"
+          value="${p.stock}" min="-1" max="9999"
+          onkeydown="if(event.key==='Enter') saveRow('${escH(p.id)}')">
+      </td>
+      <td style="text-align:center">
+        <div class="toggle-wrap" style="justify-content:center">
+          <label class="toggle">
+            <input type="checkbox" id="sd_${escH(p.id)}" ${p.disponible ? 'checked' : ''}>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-primary" onclick="saveRow('${escH(p.id)}')">
+          <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Guardar
+        </button>
+        <span class="save-feedback" id="sf_${escH(p.id)}"></span>
+      </td>
+    </tr>`).join('');
+}
+
+async function saveRow(id) {
+  const stockVal = parseInt(document.getElementById('si_' + id)?.value ?? '-1');
+  const dispVal  = document.getElementById('sd_' + id)?.checked ?? true;
+  const fb       = document.getElementById('sf_' + id);
+  try {
+    const r = await api('/api/admin/stock/' + encodeURIComponent(id), {
+      method: 'PATCH',
+      body: JSON.stringify({ stock: stockVal, disponible: dispVal }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    // update local cache
+    const idx = stockData.findIndex(p => p.id === id);
+    if (idx > -1) { stockData[idx].stock = data.stock; stockData[idx].disponible = data.disponible; }
+    fb.textContent = '✓ Guardado';
+    fb.className = 'save-feedback show';
+    setTimeout(() => fb.classList.remove('show'), 2000);
+  } catch(e) {
+    fb.textContent = '✗ Error';
+    fb.className = 'save-feedback save-err show';
+    setTimeout(() => fb.classList.remove('show'), 3000);
+    showToast('Error: ' + e.message, true);
+  }
+}
+
+function filterStock() {
+  const q    = (document.getElementById('stockSearch').value || '').toLowerCase();
+  const cat  = document.getElementById('stockFilterCat').value;
+  const disp = document.getElementById('stockFilterDisp').value;
+
+  const filtered = stockData.filter(p => {
+    if (q && !p.nombre.toLowerCase().includes(q) && !p.id.toLowerCase().includes(q)) return false;
+    if (cat && !p.id.toLowerCase().startsWith(cat)) return false;
+    if (disp === 'ok'  && (!p.disponible || p.stock === 0)) return false;
+    if (disp === 'off' && (p.disponible && p.stock !== 0)) return false;
+    return true;
+  });
+  renderStock(filtered);
+}
+
+// ════════════════════════════════════════════════════════
+//  INFO VISUAL / CONFIG
+// ════════════════════════════════════════════════════════
+const CONFIG_KEYS = [
+  'hero_badge','hero_sub1','hero_sub2','hero_desc',
+  'announce_enabled','announce_text',
+  'wa_number','direccion_deposito',
+  'horario_semana','horario_sabado','horario_domingo',
+  'aviso_web',
+];
+
+async function loadConfig() {
+  try {
+    const r = await api('/api/admin/config');
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    const map = {};
+    data.forEach(row => { map[row.key] = row.value; });
+    CONFIG_KEYS.forEach(k => {
+      const el = document.getElementById('cfg_' + k);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = map[k] === 'true';
+      else el.value = map[k] || '';
+    });
+    previewAnnounce();
+  } catch(e) {
+    showToast('Error cargando config: ' + e.message, true);
+  }
+}
+
+async function saveConfig() {
+  const btn = document.getElementById('saveConfigBtn');
+  const msg = document.getElementById('configSaveMsg');
+  btn.disabled = true;
+  const entries = CONFIG_KEYS.map(k => {
+    const el = document.getElementById('cfg_' + k);
+    if (!el) return { key: k, value: '' };
+    const value = el.type === 'checkbox' ? String(el.checked) : el.value;
+    return { key: k, value };
+  });
+  try {
+    const r = await api('/api/admin/config', {
+      method: 'POST',
+      body: JSON.stringify({ entries }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    msg.className = 'config-save-msg show';
+    setTimeout(() => msg.classList.remove('show'), 3000);
+    showToast('✓ Cambios guardados. Se verán reflejados al recargar el sitio.');
+  } catch(e) {
+    showToast('Error guardando: ' + e.message, true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function previewAnnounce() {
+  const enabled = document.getElementById('cfg_announce_enabled')?.checked;
+  const text    = document.getElementById('cfg_announce_text')?.value || '';
+  const preview = document.getElementById('announcePreview');
+  if (enabled && text) {
+    preview.innerHTML = '<strong>Anuncio</strong> · ' + escH(text);
+    preview.classList.add('show');
+  } else {
+    preview.classList.remove('show');
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  ÓRDENES
+// ════════════════════════════════════════════════════════
+let ordersCache = [];
+
+function fmtOrdDate(d) {
+  return d ? new Date(d).toLocaleString('es-AR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+}
+function fmtMoney(n) {
+  return new Intl.NumberFormat('es-AR', { style:'currency', currency:'ARS', maximumFractionDigits:0 }).format(n || 0);
+}
+function ordStatusBadge(status) {
+  const map = {
+    pending:   ['#fef3c7','#92400e','Pendiente'],
+    paid:      ['#d1fae5','#065f46','Pagado'],
+    shipped:   ['#dbeafe','#1e40af','Enviado'],
+    delivered: ['#f0fdf4','#166534','Entregado'],
+    cancelled: ['#fee2e2','#991b1b','Cancelado'],
+  };
+  const [bg, color, label] = map[status] || ['#f3f4f6','#374151', status || '—'];
+  return `<span style="background:${bg};color:${color};padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600">${label}</span>`;
+}
+
+async function loadOrders() {
+  document.getElementById('ordBody').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#aaa">Cargando…</td></tr>';
+  const now = new Date();
+  const d30 = new Date(now); d30.setDate(d30.getDate() - 30);
+  const from   = document.getElementById('ordFilterFrom').value   || d30.toISOString().slice(0,10);
+  const to     = document.getElementById('ordFilterTo').value     || now.toISOString().slice(0,10);
+  const prov   = document.getElementById('ordFilterProv').value;
+  const status = document.getElementById('ordFilterStatus').value;
+
+  if (!document.getElementById('ordFilterFrom').value) {
+    document.getElementById('ordFilterFrom').value = from;
+    document.getElementById('ordFilterTo').value   = now.toISOString().slice(0,10);
+  }
+
+  const params = new URLSearchParams({ from, to });
+  if (prov)   params.append('province', prov);
+  if (status) params.append('status', status);
+
+  try {
+    const r = await api('/api/admin/orders?' + params.toString());
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    ordersCache = data || [];
+
+    const sel = document.getElementById('ordFilterProv');
+    if (sel.options.length === 1) {
+      [...new Set(ordersCache.map(o => o.shipping_province).filter(Boolean))].sort()
+        .forEach(p => sel.add(new Option(p, p)));
+    }
+
+    document.getElementById('ordCount').textContent = `${ordersCache.length} resultados`;
+    renderOrdTable();
+  } catch(e) {
+    document.getElementById('ordBody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--red)">${escH(e.message)}</td></tr>`;
+  }
+}
+
+function renderOrdTable() {
+  const tbody = document.getElementById('ordBody');
+  if (!ordersCache.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:#aaa;font-style:italic">Sin órdenes en este rango</td></tr>';
+    return;
+  }
+  tbody.innerHTML = ordersCache.map((o, idx) => `
+    <tr style="cursor:pointer;border-bottom:1px solid #f3f4f6" onclick="toggleOrdDetail(${idx},this)" onmouseenter="this.style.background='#f9fafb'" onmouseleave="this.style.background=''">
+      <td style="padding:10px 12px"><strong style="font-family:monospace">${escH(o.order_number||o.id?.slice(0,8)||'—')}</strong></td>
+      <td style="padding:10px 12px;color:#666;white-space:nowrap;font-size:12px">${fmtOrdDate(o.created_at)}</td>
+      <td style="padding:10px 12px">${escH(o.customer_name||'—')}</td>
+      <td style="padding:10px 12px">${escH(o.shipping_province||'—')}</td>
+      <td style="padding:10px 12px">${ordStatusBadge(o.status)}</td>
+      <td style="padding:10px 12px;text-align:right;font-weight:600">${fmtMoney(o.total)}</td>
+      <td style="padding:10px 12px;color:#aaa;font-size:18px">›</td>
+    </tr>`).join('');
+}
+
+function toggleOrdDetail(idx, row) {
+  const existing = row.nextElementSibling;
+  if (existing && existing.classList.contains('ord-detail-row')) { existing.remove(); return; }
+  const o = ordersCache[idx];
+  const addr  = o.shipping_address || {};
+  const phone = (o.customer_phone || '').replace(/\D/g,'');
+  const waText = encodeURIComponent(`Hola ${(o.customer_name||'').split(' ')[0]}! Tu pedido *${o.order_number}* fue despachado 🎉 Tu tracking es: `);
+  const waUrl  = `https://wa.me/54${phone}?text=${waText}`;
+
+  const detail = document.createElement('tr');
+  detail.className = 'ord-detail-row';
+  detail.innerHTML = `<td colspan="7" style="background:#fafafa;padding:16px 20px;border-bottom:1px solid var(--line)">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:14px">
+      <div>
+        <div style="font-size:10px;font-weight:700;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Cliente</div>
+        <p style="margin:0 0 2px"><strong>${escH(o.customer_name||'—')}</strong></p>
+        <p style="margin:0 0 2px;font-size:12px">${escH(o.customer_email||'—')}</p>
+        <p style="margin:0;font-size:12px">${escH(o.customer_phone||'—')}</p>
+        ${o.notes ? `<p style="margin-top:6px;color:#888;font-style:italic;font-size:12px">"${escH(o.notes)}"</p>` : ''}
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Dirección</div>
+        <p style="margin:0 0 2px;font-size:12px">${escH(addr.street||'—')}</p>
+        <p style="margin:0 0 2px;font-size:12px">${escH(addr.city||'')}${addr.zip ? ' ('+escH(addr.zip)+')' : ''}</p>
+        <p style="margin:0;font-size:12px">${escH(addr.province||o.shipping_province||'—')}</p>
+        ${o.discount_code ? `<p style="margin-top:6px;font-size:12px;font-weight:600">Cupón: ${escH(o.discount_code)}</p>` : ''}
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">Productos</div>
+        ${(o.items||[]).map(it => `<p style="margin:0 0 3px;font-size:12px;display:flex;justify-content:space-between;gap:12px"><span>${escH(it.nombre||it.name||'')} ×${it.qty}</span><span>${fmtMoney((it.precio||it.price||0)*it.qty)}</span></p>`).join('')}
+        <p style="margin-top:6px;text-align:right;font-weight:700;font-size:13px">Total: ${fmtMoney(o.total)}</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--line)">
+      <span style="font-size:11px;color:#888;font-weight:600">ESTADO:</span>
+      ${ordStatusBadge(o.status)}
+      ${o.status === 'paid' ? `
+        <input id="trk-${escH(o.id)}" placeholder="Número de seguimiento" value="${escH(o.tracking_number||'')}" style="padding:7px 11px;border:1.5px solid var(--line);border-radius:7px;font-size:12px;font-family:inherit;outline:none;flex:1;min-width:160px;max-width:260px">
+        <button onclick="updateOrdStatus('${escH(o.id)}','shipped')" class="btn btn-sm btn-primary">✓ Marcar enviado</button>
+      ` : ''}
+      ${o.status === 'shipped' ? `
+        <span style="font-size:12px;color:#555">Tracking: <strong>${escH(o.tracking_number||'sin número')}</strong></span>
+        <button onclick="updateOrdStatus('${escH(o.id)}','delivered')" class="btn btn-sm btn-outline">Marcar entregado</button>
+      ` : ''}
+      ${phone ? `
+        <a href="${waUrl}" target="_blank" style="padding:7px 13px;background:#25d366;color:#fff;border-radius:7px;font-size:12px;font-weight:600;text-decoration:none">💬 WhatsApp</a>
+      ` : ''}
+    </div>
+  </td>`;
+  row.insertAdjacentElement('afterend', detail);
+}
+
+async function updateOrdStatus(orderId, newStatus) {
+  const trackInput = document.getElementById('trk-' + orderId);
+  const payload = { status: newStatus };
+  if (trackInput) payload.tracking_number = trackInput.value.trim() || null;
+  try {
+    const r = await api('/api/admin/orders/' + encodeURIComponent(orderId), {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    showToast('Estado actualizado');
+    loadOrders();
+  } catch(e) {
+    showToast('Error: ' + e.message, true);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  Helpers
+// ════════════════════════════════════════════════════════
+function escH(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+const CAT_LABELS = {
+  cooperacion: 'Cooperación', petlink: 'PetLink', valor: 'Valor',
+  campo: 'Campo', forrajes: 'Forrajes', camas: 'Camas',
+  talabarteria: 'Talabartería', vit: 'Vitosan',
+};
+function catLabel(id) {
+  const prefix = id.split('_')[0];
+  return CAT_LABELS[prefix] || prefix;
+}
+
+// ── Auto-login si hay token guardado ─────────────────
+(function() {
+  if (TOKEN) {
+    // verificar token con una petición ligera
+    fetch('/api/admin/stock', { headers: { 'Authorization': 'Bearer ' + TOKEN } })
+      .then(r => { if (r.ok) initAdmin(); else { TOKEN = ''; sessionStorage.removeItem('lm_admin_token'); } })
+      .catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>

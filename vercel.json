@@ -7,6 +7,7 @@
       "config": {
         "includeFiles": [
           "la_madrina.html",
+          "admin.html",
           "success.html",
           "imgs/**",
           "productos_costos/**"

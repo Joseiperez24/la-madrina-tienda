@@ -509,6 +509,123 @@ async function enviarEmailDatosTransferencia({ pedidoId, buyer, items, total }) 
   });
 }
 
+// ── Admin auth ───────────────────────────────────────────
+const ADMIN_SECRET = process.env.ADMIN_PASSWORD || null;
+
+function requireAdmin(req, res, next) {
+  if (!ADMIN_SECRET) return res.status(503).json({ error: 'Panel admin no habilitado — configurá ADMIN_PASSWORD en .env' });
+  const auth = req.headers.authorization || '';
+  if (auth !== 'Bearer ' + ADMIN_SECRET) return res.status(401).json({ error: 'No autorizado' });
+  next();
+}
+
+// ── GET /admin ───────────────────────────────────────────
+app.get('/admin', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+
+// ── POST /api/admin/login ────────────────────────────────
+app.post('/api/admin/login', (req, res) => {
+  if (!ADMIN_SECRET) return res.status(503).json({ error: 'Admin no habilitado' });
+  const { password } = req.body;
+  if (!password || password !== ADMIN_SECRET) {
+    return res.status(401).json({ error: 'Contraseña incorrecta' });
+  }
+  res.json({ token: ADMIN_SECRET });
+});
+
+// ── GET /api/admin/stock ─────────────────────────────────
+app.get('/api/admin/stock', requireAdmin, async (_req, res) => {
+  if (!supabase) return res.status(503).json({ error: 'Supabase no configurado' });
+  const { data, error } = await supabase
+    .from('stock')
+    .select('id, nombre, stock, disponible, updated_at')
+    .order('id');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+// ── PATCH /api/admin/stock/:id ───────────────────────────
+app.patch('/api/admin/stock/:id', requireAdmin, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: 'Supabase no configurado' });
+  const { id } = req.params;
+  const updates = { updated_at: new Date().toISOString() };
+  if (req.body.stock     !== undefined) updates.stock     = Number(req.body.stock);
+  if (req.body.disponible !== undefined) updates.disponible = Boolean(req.body.disponible);
+  if (req.body.nombre    !== undefined) updates.nombre    = String(req.body.nombre).trim();
+  const { data, error } = await supabase
+    .from('stock')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// ── GET /api/config-visual (público) ────────────────────
+app.get('/api/config-visual', async (_req, res) => {
+  if (!supabase) return res.json({});
+  const { data } = await supabase.from('config').select('key, value');
+  if (!data) return res.json({});
+  const cfg = {};
+  data.forEach(r => { cfg[r.key] = r.value; });
+  res.json(cfg);
+});
+
+// ── GET /api/admin/config ────────────────────────────────
+app.get('/api/admin/config', requireAdmin, async (_req, res) => {
+  if (!supabase) return res.status(503).json({ error: 'Supabase no configurado' });
+  const { data, error } = await supabase.from('config').select('*').order('key');
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+// ── POST /api/admin/config ───────────────────────────────
+app.post('/api/admin/config', requireAdmin, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: 'Supabase no configurado' });
+  const { entries } = req.body;
+  if (!Array.isArray(entries) || !entries.length) {
+    return res.status(400).json({ error: 'entries[] requerido' });
+  }
+  const records = entries.map(e => ({
+    key:        String(e.key).trim(),
+    value:      String(e.value ?? '').trim(),
+    updated_at: new Date().toISOString(),
+  }));
+  const { error } = await supabase
+    .from('config')
+    .upsert(records, { onConflict: 'key' });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true, updated: records.length });
+});
+
+// ── GET /api/admin/orders ─────────────────────────────
+app.get('/api/admin/orders', requireAdmin, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: 'Supabase no configurado' });
+  const { from, to, province, status, limit = 200 } = req.query;
+  let q = supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(Number(limit));
+  if (from)     q = q.gte('created_at', from + 'T00:00:00Z');
+  if (to)       q = q.lte('created_at', to   + 'T23:59:59Z');
+  if (province) q = q.eq('shipping_province', province);
+  if (status)   q = q.eq('status', status);
+  const { data, error } = await q;
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || []);
+});
+
+// ── PATCH /api/admin/orders/:id ───────────────────────
+app.patch('/api/admin/orders/:id', requireAdmin, async (req, res) => {
+  if (!supabase) return res.status(503).json({ error: 'Supabase no configurado' });
+  const { id } = req.params;
+  const updates = { updated_at: new Date().toISOString() };
+  if (req.body.status !== undefined)          updates.status          = String(req.body.status);
+  if (req.body.tracking_number !== undefined) updates.tracking_number = req.body.tracking_number || null;
+  const { data, error } = await supabase.from('orders').update(updates).eq('id', id).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
 // ── Inicio ───────────────────────────────────────────────
 // Exportar app para Vercel (serverless). En local se levanta con app.listen().
 module.exports = app;

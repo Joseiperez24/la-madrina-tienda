@@ -3468,11 +3468,6 @@ function mpcoLoadRates() {
   }).then(function(r){ return r.json(); }).then(function(d){ mpcoShippingRates = d || []; }).catch(function(){});
 }
 
-document.getElementById('cfProvince').addEventListener('change', function(e) {
-  var prov = e.target.value;
-  mpcoShipping = mpcoShippingRates.find(function(r){ return r.province === prov; }) || null;
-  if (mpcoCurrentStep === 2) mpcoRenderSummary();
-});
 
 function mpcoRenderSummary() {
   var items = Object.values(cart);
@@ -3496,30 +3491,6 @@ function mpcoRenderSummary() {
   totalEl.style.opacity = c.total !== null ? '1' : '.45';
 }
 
-document.getElementById('cfApplyDiscount').addEventListener('click', async function() {
-  var code = document.getElementById('cfDiscountCode').value.trim().toUpperCase();
-  var msgEl = document.getElementById('cfDiscountMsg');
-  if (!code) return;
-  msgEl.className = 'cf-msg'; msgEl.textContent = 'Verificando…'; msgEl.style.display = 'block';
-  try {
-    var res = await fetch(MPCO_FN_URL + '/validate-discount', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': MPCO_ANON },
-      body: JSON.stringify({ code: code }),
-    });
-    var data = await res.json();
-    if (!res.ok || data.error) {
-      msgEl.className = 'cf-msg err'; msgEl.textContent = data.error || 'Código inválido';
-      mpcoDiscount = { code:'', pct:0 };
-    } else {
-      msgEl.className = 'cf-msg ok'; msgEl.textContent = '✓ ' + data.discount_pct + '% de descuento aplicado';
-      mpcoDiscount = { code: data.code, pct: Number(data.discount_pct) };
-    }
-    mpcoRenderSummary();
-  } catch(e) {
-    msgEl.className = 'cf-msg err'; msgEl.textContent = 'Error al verificar el código';
-  }
-});
 
 function mpcoValidateStep1() {
   var ok = true;
@@ -3554,21 +3525,6 @@ async function mpcoGoToStep(step) {
   }
 }
 
-document.getElementById('mpcoConfirmBtn').addEventListener('click', async function() {
-  if (mpcoCurrentStep < 3) await mpcoGoToStep(mpcoCurrentStep + 1);
-});
-
-document.getElementById('coBackBtn').addEventListener('click', async function() {
-  if (mpcoCurrentStep <= 1) return;
-  document.getElementById('coStep' + mpcoCurrentStep).style.display = 'none';
-  mpcoCurrentStep--;
-  document.getElementById('coStep' + mpcoCurrentStep).style.display = '';
-  mpcoUpdateDots(mpcoCurrentStep);
-  document.getElementById('coBackBtn').style.display = mpcoCurrentStep > 1 ? '' : 'none';
-  var confirmBtn = document.getElementById('mpcoConfirmBtn');
-  confirmBtn.style.display = ''; confirmBtn.disabled = false; confirmBtn.textContent = 'Continuar →';
-  if (mpcoBrickController) { try { await mpcoBrickController.unmount(); } catch(e){} mpcoBrickController = null; }
-});
 
 async function mpcoMountBrick(amount) {
   if (mpcoBrickController) { try { await mpcoBrickController.unmount(); } catch(e){} mpcoBrickController = null; }
@@ -3879,6 +3835,57 @@ document.addEventListener('DOMContentLoaded', function() {
   var mpcoBackdrop = document.getElementById('mpcoBackdrop');
   if (mpcoClose) mpcoClose.addEventListener('click', closeMPCheckout);
   if (mpcoBackdrop) mpcoBackdrop.addEventListener('click', closeMPCheckout);
+
+  var cfProvince = document.getElementById('cfProvince');
+  if (cfProvince) cfProvince.addEventListener('change', function(e) {
+    var prov = e.target.value;
+    mpcoShipping = mpcoShippingRates.find(function(r){ return r.province === prov; }) || null;
+    if (mpcoCurrentStep === 2) mpcoRenderSummary();
+  });
+
+  var cfApplyDiscount = document.getElementById('cfApplyDiscount');
+  if (cfApplyDiscount) cfApplyDiscount.addEventListener('click', async function() {
+    var code = document.getElementById('cfDiscountCode').value.trim().toUpperCase();
+    var msgEl = document.getElementById('cfDiscountMsg');
+    if (!code) return;
+    msgEl.className = 'cf-msg'; msgEl.textContent = 'Verificando…'; msgEl.style.display = 'block';
+    try {
+      var res = await fetch(MPCO_FN_URL + '/validate-discount', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': MPCO_ANON },
+        body: JSON.stringify({ code: code }),
+      });
+      var data = await res.json();
+      if (!res.ok || data.error) {
+        msgEl.className = 'cf-msg err'; msgEl.textContent = data.error || 'Código inválido';
+        mpcoDiscount = { code:'', pct:0 };
+      } else {
+        msgEl.className = 'cf-msg ok'; msgEl.textContent = '✓ ' + data.discount_pct + '% de descuento aplicado';
+        mpcoDiscount = { code: data.code, pct: Number(data.discount_pct) };
+      }
+      mpcoRenderSummary();
+    } catch(e) {
+      msgEl.className = 'cf-msg err'; msgEl.textContent = 'Error al verificar el código';
+    }
+  });
+
+  var mpcoConfirmBtn = document.getElementById('mpcoConfirmBtn');
+  if (mpcoConfirmBtn) mpcoConfirmBtn.addEventListener('click', async function() {
+    if (mpcoCurrentStep < 3) await mpcoGoToStep(mpcoCurrentStep + 1);
+  });
+
+  var coBackBtn = document.getElementById('coBackBtn');
+  if (coBackBtn) coBackBtn.addEventListener('click', async function() {
+    if (mpcoCurrentStep <= 1) return;
+    document.getElementById('coStep' + mpcoCurrentStep).style.display = 'none';
+    mpcoCurrentStep--;
+    document.getElementById('coStep' + mpcoCurrentStep).style.display = '';
+    mpcoUpdateDots(mpcoCurrentStep);
+    document.getElementById('coBackBtn').style.display = mpcoCurrentStep > 1 ? '' : 'none';
+    var confirmBtn = document.getElementById('mpcoConfirmBtn');
+    confirmBtn.style.display = ''; confirmBtn.disabled = false; confirmBtn.textContent = 'Continuar →';
+    if (mpcoBrickController) { try { await mpcoBrickController.unmount(); } catch(e){} mpcoBrickController = null; }
+  });
 });
 // ═══════════════════════════════════════════════════
 
